@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Back Scratch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+    <script type="text/javascript" src="js/knockout-2.1.0.js"></script>
+    <script type="text/javascript" src="js/models/conf.js"></script>
+</head>
+<body>
+    <h2>Your seat reservations (<span data-bind="text: seats().length"></span>)</h2>
+
+    <table>
+        <thead><tr>
+            <th>Passenger name</th><th>Meal</th><th>Surcharge</th><th></th>
+        </tr></thead>
+        <tbody data-bind="foreach: seats">
+            <tr>
+                <td><input data-bind="value: name" /></td>
+                <td><select data-bind="options: $root.availableMeals, value: meal, optionsText: 'mealName'"></select></td>
+                <td data-bind="text: formattedPrice"></td>
+                <td><a href="#" data-bind="click: $root.removeSeat">Remove</a></td>
+            </tr>    
+    </tbody>
+    </table>
+
+    <button data-bind="click: addSeat, enable: seats().length < 5">Reserve another seat</button>
+
+    <h3 data-bind="visible: totalSurcharge() > 0">
+        Total surcharge: $<span data-bind="text: totalSurcharge().toFixed(2)"></span>
+    </h3>
+</body>
+</html>
+<script type="text/javascript">
+    ko.applyBindings(new ReservationsViewModel());
+</script>

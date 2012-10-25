@@ -1,0 +1,96 @@
+./node/aaa/authorize.js:29:        if (err) { //TODO: Handle the error for real
+./node/aaa/authorize.js:31:            //TODO: Don't retardedly concatenate to an empty string
+./node/aaa/authorize.js:47:                    if (err) { //TODO: Handle the error for real
+./node/aaa/authorize.js:49:                        //TODO: Don't retardedly concatenate to an empty string
+./node/db/models/client.js:40:    //TODO: Add client specific pre-save hook logic
+./node/db/models/coinHistory.js:20:    //TODO: Add coin history specific pre-save hook logic
+./node/db/models/game.js:20:    //TODO: Add game specific pre-save hook logic
+./node/db/models/location.js:40:    //TODO: Add location specific pre-save hook logic
+./node/db/models/prize.js:34:    //TODO: Add prize specific pre-save hook logic
+./node/db/models/prizeHistory.js:23:    //TODO: Add prize history specific pre-save hook logic
+./node/db/models/promotion.js:23:    //TODO: Add promotion specific pre-save hook logic
+./node/handlers/clientHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/clientHandler.js:11:            //TODO: Don't retardedly concatenate to an empty string
+./node/handlers/clientHandler.js:24:        if (err) { //TODO: Handle the error for real
+./node/handlers/clientHandler.js:38:        if (err) { //TODO: Handle the error for real
+./node/handlers/clientHandler.js:52:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/clientHandler.js:53:    //TODO: Figure out how to pass this properly to Client.find()
+./node/handlers/clientHandler.js:56:        if (err) { //TODO: Handle the error for real
+./node/handlers/clientHandler.js:75:    //TODO: Figure out authentication!
+./node/handlers/clientHandler.js:86:        if (err) { //TODO: Handle the error for real
+./node/handlers/coinHistoryHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/coinHistoryHandler.js:11:            //TODO: Don't retardedly concatenate to an empty string
+./node/handlers/coinHistoryHandler.js:24:        if (err) { //TODO: Handle the error for real
+./node/handlers/coinHistoryHandler.js:38:        if (err) { //TODO: Handle the error for real
+./node/handlers/coinHistoryHandler.js:52:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/coinHistoryHandler.js:53:    //TODO: Figure out how to pass this properly to CoinHistory.find()
+./node/handlers/coinHistoryHandler.js:56:        if (err) { //TODO: Handle the error for real
+./node/handlers/coinHistoryHandler.js:75:    //TODO: Figure out authentication!
+./node/handlers/coinHistoryHandler.js:84:        if (err) { //TODO: Handle the error for real
+./node/handlers/gameHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/gameHandler.js:11:            //TODO: Don't retardedly concatenate to an empty string
+./node/handlers/gameHandler.js:23:        if (err) { //TODO: Handle the error for real
+./node/handlers/gameHandler.js:36:    //TODO: Validate (sanitize) req.params.gameId
+./node/handlers/gameHandler.js:38:        if (err) { //TODO: Handle the error for real
+./node/handlers/gameHandler.js:52:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/gameHandler.js:53:    //TODO: Figure out how to pass this properly to Game.find()
+./node/handlers/gameHandler.js:56:        if (err) { //TODO: Handle the error for real
+./node/handlers/gameHandler.js:75:    //TODO: Figure out authentication!
+./node/handlers/gameHandler.js:84:        if (err) { //TODO: Handle the error for real
+./node/handlers/groupHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/groupHandler.js:11:            //TODO: Don't retardedly concatenate to an empty string
+./node/handlers/groupHandler.js:24:        if (err) { //TODO: Handle the error for real
+./node/handlers/groupHandler.js:38:        if (err) { //TODO: Handle the error for real
+./node/handlers/groupHandler.js:52:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/groupHandler.js:53:    //TODO: Figure out how to pass this properly to Group.find()
+./node/handlers/groupHandler.js:56:        if (err) { //TODO: Handle the error for real
+./node/handlers/groupHandler.js:75:    //TODO: Figure out authentication!
+./node/handlers/groupHandler.js:85:        if (err) { //TODO: Handle the error for real
+./node/handlers/locationHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/locationHandler.js:11:            //TODO: Don't retardedly concatenate to an empty string
+./node/handlers/locationHandler.js:24:        if (err) { //TODO: Handle the error for real
+./node/handlers/locationHandler.js:38:        if (err) { //TODO: Handle the error for real
+./node/handlers/locationHandler.js:52:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/locationHandler.js:53:    //TODO: Figure out how to pass this properly to Location.find()
+./node/handlers/locationHandler.js:56:        if (err) { //TODO: Handle the error for real
+./node/handlers/locationHandler.js:75:    //TODO: Figure out authentication!
+./node/handlers/locationHandler.js:86:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHandler.js:11:            //TODO: Don'r retardedly concatenate to an empty string
+./node/handlers/prizeHandler.js:23:    //TODO: Validate (sanitize) req.params.prizeId
+./node/handlers/prizeHandler.js:25:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHandler.js:39:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHandler.js:53:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/prizeHandler.js:54:    //TODO: Figure out how to pass this properly to Prize.find()
+./node/handlers/prizeHandler.js:57:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHandler.js:76:    //TODO: Figure out authentication!
+./node/handlers/prizeHandler.js:89:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHistoryHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHistoryHandler.js:11:            //TODO: Don'r retardedly concatenate to an empty string
+./node/handlers/prizeHistoryHandler.js:23:    //TODO: Validate (sanitize) req.params.prizeHistoryId
+./node/handlers/prizeHistoryHandler.js:25:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHistoryHandler.js:38:    //TODO: Validate (sanitize) req.params.prizeHistoryId
+./node/handlers/prizeHistoryHandler.js:40:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHistoryHandler.js:54:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/prizeHistoryHandler.js:55:    //TODO: Figure out how to pass this properly to PrizeHistory.find()
+./node/handlers/prizeHistoryHandler.js:58:        if (err) { //TODO: Handle the error for real
+./node/handlers/prizeHistoryHandler.js:77:    //TODO: Figure out authentication!
+./node/handlers/prizeHistoryHandler.js:88:        if (err) { //TODO: Handle the error for real
+./node/handlers/promotionHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/promotionHandler.js:11:            //TODO: Don't retardedly concatenate to an empty string
+./node/handlers/promotionHandler.js:22:        if (err) { //TODO: Handle the error for real
+./node/handlers/promotionHandler.js:36:        if (err) { //TODO: Handle the error for real
+./node/handlers/promotionHandler.js:50:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/promotionHandler.js:51:    //TODO: Figure out how to pass this properly to Promotion.find()
+./node/handlers/promotionHandler.js:54:        if (err) { //TODO: Handle the error for real
+./node/handlers/promotionHandler.js:73:    //TODO: Figure out authentication!
+./node/handlers/promotionHandler.js:87:        if (err) { //TODO: Handle the error for real
+./node/handlers/userHandler.js:9:        if (err) { //TODO: Handle the error for real
+./node/handlers/userHandler.js:11:            //TODO: Don't retardedly concatenate to an empty string
+./node/handlers/userHandler.js:24:        if (err) { //TODO: Handle the error for real
+./node/handlers/userHandler.js:38:        if (err) { //TODO: Handle the error for real
+./node/handlers/userHandler.js:52:    //TODO: Validate (sanitize) req.params[0] (field name) and req.params[1] (value)
+./node/handlers/userHandler.js:53:    //TODO: Figure out how to pass this properly to User.find()
+./node/handlers/userHandler.js:56:        if (err) { //TODO: Handle the error for real
+./node/handlers/userHandler.js:75:    //TODO: Figure out authentication!
+./node/handlers/userHandler.js:92:        if (err) { //TODO: Handle the error for real
