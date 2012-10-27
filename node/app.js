@@ -12,6 +12,7 @@ var apiServer = restify.createServer({
 
 //Restify Options
 apiServer.use(restify.acceptParser(apiServer.acceptable));
+apiServer.use(restify.queryParser({ mapParams: true}));
 apiServer.use(restify.bodyParser({ mapParams: true}));
 apiServer.use(restify.authorizationParser());
 
