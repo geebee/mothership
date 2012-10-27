@@ -17,6 +17,69 @@ exports.list = function(req, res, next) {
     });
 };
 
+exports.single = function(req, res, next) {
+    console.log("handler 'singleConf'");
+    console.log("req.params:\n%j", req.params);
+
+    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf) {
+        if (err) { //TODO: Handle the error for real
+            console.log("Error Retrieving Conf: " + err);
+            res.send({error: "" + err});
+        } else {
+            console.log("Conf: " + req.params.friendlyName + " retrieved.");
+            if (req.params.style){
+                switch(req.params.style) {
+                    case "raw":
+                        console.log("Style was raw");
+                        var mappedProperties = ""; 
+                        conf.properties.forEach(function(p){ 
+                            var keyName = Object.keys(p)[0];
+                            mappedProperties = mappedProperties + keyName + "=" + p[keyName] + "\n";
+                        });  
+                        res.writeHead(200, {'Content-Type': 'text/plain'});
+                        res.end(mappedProperties);
+                        break;
+                    case "quoted":
+                        console.log("Style was quoted");
+                        var mappedProperties = ""; 
+                        conf.properties.forEach(function(p){ 
+                            var keyName = Object.keys(p)[0];
+                            mappedProperties = mappedProperties + "\"" + keyName + "\"=\"" + p[keyName] + "\"\n";
+                        });  
+                        res.writeHead(200, {'Content-Type': 'text/plain'});
+                        res.end(mappedProperties);
+                        break;
+                    case "json":
+                        console.log("Style was json");
+                        var mappedProperties = {};
+                        conf.properties.forEach(function(p){ 
+                            var keyName = Object.keys(p)[0];
+                            mappedProperties[keyName] = p[keyName];
+                        });  
+                        res.send(mappedProperties);
+                        break;
+                    case "properties":
+                        console.log("Style was properties");
+                        var mappedProperties = ""; 
+                        conf.properties.forEach(function(p){ 
+                            var keyName = Object.keys(p)[0];
+                            var fixedKey = keyName.replace(/\s/g,".");
+                            mappedProperties = mappedProperties + fixedKey + "=" + p[keyName] + "\n";
+                        });  
+                        res.writeHead(200, {'Content-Type': 'text/plain'});
+                        res.end(mappedProperties);
+                        break;
+                    default:
+                        console.log("Style was unknown");
+                        res.send({validStyles: ["raw", "quoted", "json", "properties"]});
+                }
+            } else {
+                res.send(conf);
+            }
+        }
+    });
+};
+
 exports.remove = function(req, res, next) {
     console.log("handler 'deleteConf'");
     console.log("Friendly Name: " + req.params.friendlyName);
@@ -28,21 +91,6 @@ exports.remove = function(req, res, next) {
         } else {
             console.log("Conf: " + req.params.friendlyName + " deleted.");
             res.send({"deleted": req.params.friendlyName});
-        }
-    });
-};
-
-exports.single = function(req, res, next) {
-    console.log("handler 'singleConf'");
-
-    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf) {
-        if (err) { //TODO: Handle the error for real
-            console.log("Error Retrieving Conf: " + err);
-            res.send({error: "" + err});
-        } else {
-            console.log("Conf: " + req.params.friendlyName + " retrieved.");
-            //TODO: Get style= from query string and return appropriately
-            res.send(conf);
         }
     });
 };
