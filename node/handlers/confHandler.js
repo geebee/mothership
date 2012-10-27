@@ -19,15 +19,15 @@ exports.list = function(req, res, next) {
 
 exports.remove = function(req, res, next) {
     console.log("handler 'deleteConf'");
-    console.log("Conf ID: " + req.params.confId);
+    console.log("Friendly Name: " + req.params.friendlyName);
 
-    conf.remove({_id: req.params.confId}, function(err, conf) {
+    conf.remove({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf) {
         if (err) { //TODO: Handle the error for real
             console.log("Error Deleting conf: " + err);
             res.send({error: "" + err});
         } else {
-            console.log("Conf: " + req.params.confId + " deleted.");
-            res.send({"deleted": req.params.confId});
+            console.log("Conf: " + req.params.friendlyName + " deleted.");
+            res.send({"deleted": req.params.friendlyName});
         }
     });
 };
@@ -35,22 +35,53 @@ exports.remove = function(req, res, next) {
 exports.single = function(req, res, next) {
     console.log("handler 'singleConf'");
 
-    Conf.findById(req.params.confId, function(err, conf) {
+    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf) {
         if (err) { //TODO: Handle the error for real
             console.log("Error Retrieving Conf: " + err);
             res.send({error: "" + err});
         } else {
-            console.log("Conf: " + req.params.confId + " retrieved.");
+            console.log("Conf: " + req.params.friendlyName + " retrieved.");
+            //TODO: Get style= from query string and return appropriately
             res.send(conf);
         }
     });
 };
 
-exports.modify = function(req, res, next) {
+exports.modifyHost = function(req, res, next) {
     console.log("handler 'modifyConf'");
-    console.log("Conf ID: " + req.params.confId);
+    console.log("Friendly Name: " + req.params.friendlyName);
 
-    Conf.findByIdAndUpdate(req.params.confID, { $set: req.params.toUpdate}, function(err, numberAffected, rawResponse) {
+    Conf.findOneAndUpdate({"hostIdentification.friendlyName": req.params.friendlyName}, { $set: req.params.toUpdate}, function(err, numberAffected, rawResponse) {
+        if (err) {
+            console.log("Error Updating User: " + err);
+            res.send({error: "" + err});
+        } else {
+            console.log("Update Completed. Affected Documents: " + numberAffected);
+            res.send({"status": "successful", "affected": numberAffected});
+        }
+    });
+};
+
+exports.addProperty = function(req, res, next) {
+    console.log("handler 'addProperty'");
+    console.log("Friendly Name: " + req.params.friendlyName);
+
+    Conf.findOneAndUpdate({"hostIdentification.friendlyName": req.params.friendlyName}, { $set: req.params.toUpdate}, function(err, numberAffected, rawResponse) {
+        if (err) {
+            console.log("Error Updating User: " + err);
+            res.send({error: "" + err});
+        } else {
+            console.log("Update Completed. Affected Documents: " + numberAffected);
+            res.send({"status": "successful", "affected": numberAffected});
+        }
+    });
+};
+
+exports.removeProperty = function(req, res, next) {
+    console.log("handler 'removeProperty'");
+    console.log("Friendly Name: " + req.params.friendlyName);
+
+    Conf.findOneAndUpdate({"hostIdentification.friendlyName": req.params.friendlyName}, { $set: req.params.toUpdate}, function(err, numberAffected, rawResponse) {
         if (err) {
             console.log("Error Updating User: " + err);
             res.send({error: "" + err});
@@ -67,12 +98,13 @@ exports.create = function(req, res, next) {
     //Inputs are validated as needed in the model
     //TODO: Figure out authentication!
     var newConf = new Conf({
-        legalName: req.params.legalName,
-        address: req.params.address,
-        phoneNumber: req.params.phoneNumber,
-        contact: req.params.contact,
-        promotions: req.params.promotions,
-        cardCodes: req.params.cardCodes
+        hostIdentification: {
+            "friendlyName": req.params.friendlyName,
+            "fqdn": req.params.fqdn, 
+            "ip": req.params.ip,
+            "url": req.params.url
+        },
+        properties: req.params.properties
     });
 
     newConf.save(function(err) {
@@ -80,8 +112,8 @@ exports.create = function(req, res, next) {
             console.log("Error Saving Conf: " + err);
             res.send({error: "" + err});
         } else {
-            console.log("Conf: " + newConf._id + " created successfully.");
-            res.send({information: "conf page", confId: newconf._id});
+            console.log("Conf: " + newConf.hostIdentification.friendlyName + " created successfully.");
+            res.send({information: "conf page", friendlyName: newConf.hostIdentification.friendlyName});
         }
     });
 };

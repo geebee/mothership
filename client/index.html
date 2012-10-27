@@ -2,36 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Back Scratch</title>
+    <title>mothership</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script type="text/javascript" src="js/knockout-2.1.0.js"></script>
     <script type="text/javascript" src="js/models/conf.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            ko.applyBindings(new ConfViewModel());
+        });
+    </script>
 </head>
 <body>
-    <h2>Your seat reservations (<span data-bind="text: seats().length"></span>)</h2>
+    <div id="wholeBody" class="row-fluid span12">
+        <div id="topBar" class="row-fluid span12">
+            <h4>Configuration</h4>
+        </div> <!-- #topBar.row-fluid.span12 -->
+        <br/>
+        <div data-bind="with: hostIdentification" id="hostInformationArea" class="row-fluid span4 well" style="margin-left: 32%;">
+            <p>
+                Friendly Name:&nbsp;
+                <b data-bind="visible: !$root.editing(), text: friendlyName(), click: $root.edit">&nbsp;</b>
+                <span data-bind="visible: $root.editing">
+                    <input data-bind="visible: $root.editing, value: friendlyName, hasfocus: $root.editing" type="text" class="input-large" />&nbsp;
+                    <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
+                    <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
+                </span>
+                <br/>
+                FQDN:&nbsp;
+                <b data-bind="visible: !$root.editing(), text: fqdn(), click: $root.edit">&nbsp;</b>
+                <span data-bind="visible: $root.editing">
+                    <input data-bind="visible: $root.editing, value: fqdn, hasfocus: $root.editing" type="text" class="input-large" />&nbsp;
+                    <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
+                    <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
+                </span>
+                <br/>
+                IP:&nbsp;
+                <b data-bind="visible: !$root.editing(), text: ip(), click: $root.edit">&nbsp;</b>
+                <span data-bind="visible: $root.editing">
+                    <input data-bind="visible: $root.editing, value: ip, hasfocus: $root.editing" type="text" class="input-large" />&nbsp;
+                    <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
+                    <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
+                </span>
+                <br/>
+                URL:&nbsp;
+                <b data-bind="visible: !$root.editing(), text: url(), click: $root.edit">&nbsp;</b>
+                <span data-bind="visible: $root.editing">
+                    <input data-bind="value: url, hasfocus: $root.editing" type="text" class="input-large" />&nbsp;
+                    <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
+                    <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
+                </span>
+                <br/>
+            </p>
+        </div> <!-- #hostInformationArea.row-fluid.span10.container  -->
+        <div id="propertyArea" class="row-fluid span10" style="margin-left: 6%;">
+            <table class="table table-striped table-hover table-bordered">
+                <thead><tr>
+                        <th style="width: 45%;">Key</th>
+                        <th style="width: 45%;">Value</th>
+                        <th style="width: 10%;">Actions</th>
+                </tr></thead>
+                <tbody data-bind="template: { name: templateToUse, foreach: properties}"></tbody>
+            </table>
+            <button class="btn" data-bind="click: addProperty, enable: persistedProperties().length < 5">Add another property</button>
+            <!-- <button class="btn" data-bind="click: save">Save</button> -->
+        </div> <!-- #propertyArea.container -->
+    </div> <!-- #wholeBody.row-fluid.span12  -->
 
-    <table>
-        <thead><tr>
-            <th>Passenger name</th><th>Meal</th><th>Surcharge</th><th></th>
-        </tr></thead>
-        <tbody data-bind="foreach: seats">
-            <tr>
-                <td><input data-bind="value: name" /></td>
-                <td><select data-bind="options: $root.availableMeals, value: meal, optionsText: 'mealName'"></select></td>
-                <td data-bind="text: formattedPrice"></td>
-                <td><a href="#" data-bind="click: $root.removeSeat">Remove</a></td>
-            </tr>    
-    </tbody>
-    </table>
+    <h4>What's Happening:</h4>
+    <textarea name="properties" data-bind="value: ko.toJSON(properties)"></textarea>
 
-    <button data-bind="click: addSeat, enable: seats().length < 5">Reserve another seat</button>
-
-    <h3 data-bind="visible: totalSurcharge() > 0">
-        Total surcharge: $<span data-bind="text: totalSurcharge().toFixed(2)"></span>
-    </h3>
+    <script id="propertyTemplate" type="text/html">
+        <tr>
+            <td data-bind="text: key" style="table-layout: fixed; text-align: center; overflow: hidden;"></td>
+            <td data-bind="text: value" style="table-layout: fixed; text-align: center; overflow: hidden;"></td>
+            <td style="text-align:center;" class="buttons">
+                <i class="icon-edit" data-bind="click: $root.editProperty"></i>
+                <i class="icon-trash" data-bind="click: $root.removeProperty"></i>
+            </td>
+        </tr>
+    </script>
+    <script id="editTemplate" type="text/html">
+        <tr>
+            <td style="text-align: center;">
+                <input data-bind="value: key "type="text" class="input-xlarge" placeholder="new key">
+            </td>
+            <td style="text-align: center;">
+                <input data-bind="value: value"type="text" class="input-xlarge" placeholder="new value">
+            </td>
+            <td style="text-align: center;" class="buttons">
+                <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
+                <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
+            </td>
+        </tr>
+    </script>
 </body>
 </html>
-<script type="text/javascript">
-    ko.applyBindings(new ReservationsViewModel());
-</script>

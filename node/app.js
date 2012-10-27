@@ -41,6 +41,6 @@ apiServer.on('after', restify.auditLogger({
 */
 
 //Start the Restify Server
-apiServer.listen(8888, function() {
+apiServer.listen(8889, function() {
     console.log('%s listening at %s', apiServer.name, apiServer.url);
 });
