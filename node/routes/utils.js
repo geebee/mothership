@@ -6,4 +6,6 @@ module.exports = function(apiServer){
     apiServer.get('/test', function(req, res, next) {
         res.send({"message": "success"});
     });
+
+    apiServer.get('/search', utilHandler.search);
 };
