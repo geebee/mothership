@@ -5,10 +5,10 @@ var version = require('../plugins/version');
 //Schema definition
 var ConfSchema = new mongoose.Schema({
     hostIdentification: {
-        friendlyName: {type: String, required: true, unique: true},
-        fqdn: {type: String, required: true},
-        ip: {type: String, required: true},
-        url: {type: String, required: true},
+        friendlyName: {type: String, required: true, unique: true, index:true},
+        fqdn: {type: String, required: true, index:true},
+        ip: {type: String, required: true, index:true},
+        url: {type: String, required: true, index:true},
     },
     properties: {}
 });
