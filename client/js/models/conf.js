@@ -1,58 +1,26 @@
-//wrapper for an observable that protects value until committed
-ko.protectedObservable = function(initialValue) {
-    //private variables
-    var _temp = initialValue;
-    var _actual = ko.observable(initialValue);
-
-    var result = ko.dependentObservable({
-        read: _actual,
-        write: function(newValue) {
-            _temp = newValue;
-        }
-    });
-    
-    //commit the temporary value to our observable, if it is different
-    result.commit = function() {
-        if (_temp !== _actual()) {
-            _actual(_temp);
-        }
-    };
-
-    //notify subscribers to update their value with the original
-    result.reset = function() {
-        _actual.valueHasMutated();
-        _temp = _actual();
-    };
-
-    return result;
-};
-
 // Class to represent a host identification entry
-function HostIdentification(friendlyName, ip, fqdn, url) {
-    var self = this;
-    self.friendlyName = ko.protectedObservable(friendlyName);
-    self.fqdn = ko.protectedObservable(fqdn);
-    self.ip = ko.protectedObservable(ip);
-    self.url = ko.protectedObservable(url);
+function HostIdentification(friendlyName, fqdn, ip, url) {
+    this.friendlyName = ko.protectedObservable(friendlyName);
+    this.fqdn = ko.protectedObservable(fqdn);
+    this.ip = ko.protectedObservable(ip);
+    this.url = ko.protectedObservable(url);
+    this.focused = ko.protectedObservable();
 }
-
 // Class to represent an individual property entry 
 function Property(key, value) {
-    var self = this;
-    self.key = ko.protectedObservable(key);
-    self.value = ko.protectedObservable(value);
+    this.key = ko.protectedObservable(key);
+    this.key.focused = ko.observable();
+    this.value = ko.protectedObservable(value);
 }
 
 // Overall viewmodel for this screen, along with initial state
-function ConfViewModel(test) {
+function ConfViewModel() {
     var self = this;
-    self.hostIdentification = ko.observable();
-    self.properties = ko.observableArray([]);
-    self.selectedProperty = ko.observable();
-    self.editing = ko.observable(false);
+    this.hostIdentification = ko.observable();
+    this.properties = ko.observableArray([]);
+    this.selectedElement = ko.observable();
 
-    /*
-    //Set fake initial state...
+    /*//{{{ Set fake initial state...
     self.hostIdentification = ko.observable(new HostIdentification("testConf", "a.b.c", "127.0.0.1", "http://a.b.c/url"));
 
     self.properties = ko.observableArray([
@@ -60,13 +28,12 @@ function ConfViewModel(test) {
         new Property("key2", "value2"),
         new Property("key3", "value3")
     ]);
-    */
+    *///}}}
     
-    // Load initial state from server, convert it to Property/HostIdentification instances, populate observables
+    // Load initial state from server, convert it to Property/HostIdentification instances, populate observables//{{{
     $.getJSON("/conf/testConf", function(allData) {
         var h = allData.hostIdentification;
         var mappedHostIdentification = new HostIdentification(h.friendlyName, h.fqdn, h.ip, h.url);
-        console.log(mappedHostIdentification);
         var mappedProperties = $.map(allData.properties, function(p) { 
             var keyName = Object.keys(p)[0];
             return new Property(keyName, p[keyName]);
@@ -75,45 +42,45 @@ function ConfViewModel(test) {
         self.hostIdentification(mappedHostIdentification);
         self.properties(mappedProperties);
     });
-         
-    // Behaviors
-    self.edit = function() { self.editing(true) };
-    self.editProperty = function(toEdit) {
-        self.selectedProperty(toEdit);
-    }
 
-    self.addProperty = function() {
+    // Behaviors
+    this.addProperty = function() {
         var newProperty = new Property("", "");
         self.properties.push(newProperty);
-        self.selectedProperty(newProperty);
-    }
+        self.selectedElement(newProperty);
+    };
     
-    self.removeProperty = function(property) {
+    this.removeProperty = function(property) {
         self.properties.destroy(property);
-        self.selectedProperty(null);
-    }
-
-    self.acceptPropertyEdit = function() {
-        self.selectedProperty().key.commit();
-        self.selectedProperty().value.commit();
-        self.selectedProperty(null);
+        self.selectedElement(null);
     };
 
-    self.cancelPropertyEdit = function() {
-        self.selectedProperty().key.reset();
-        self.selectedProperty().value.reset();
-        self.selectedProperty(null);
+    this.editElement = function(item) {
+        self.selectedElement(item);
+        item.key.focused(true);
     };
 
-    self.templateToUse = function(property) {
-        return self.selectedProperty() === property ? "editTemplate" : "propertyTemplate";
+    this.acceptElementEdit = function(e) {
+        self.selectedElement().key.commit();
+        self.selectedElement().value.commit();
+        self.selectedElement(null);
     };
 
-    self.persistedProperties = ko.computed(function() {
+    this.cancelElementEdit = function(e) {
+        self.selectedElement().key.reset();
+        self.selectedElement().value.reset();
+        self.selectedElement(null);
+    };
+
+    this.templateToUse = function(property) {
+        return self.selectedElement() === property ? "editTemplate" : "viewTemplate";
+    };
+
+    this.persistedProperties = ko.computed(function() {
         return ko.utils.arrayFilter(self.properties(), function(property) { return !property._destroy});
     });
 
-    self.saveHostIdentification = function() {
+    this.saveHostIdentification = function() {
         $.ajax("/conf/testConf/host", {
             data: ko.toJson({properties: self.properties}),
             type: "PUT",
@@ -129,7 +96,7 @@ function ConfViewModel(test) {
         });
     };
 
-    self.saveProperties = function() {
+    this.saveProperties = function() {
         $.ajax("/conf/testConf/property", {
             data: ko.toJson({properties: self.properties}),
             type: "PUT",

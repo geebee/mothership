@@ -25,7 +25,7 @@ exports.search = function(req, res, next) {
     require('../db/init');
     var confModel = require('../db/models/conf'); 
     var Conf = db.model('Conf', confModel.ConfSchema);
-    console.log("Qeury: %s", req.params.query);
+    console.log("Query: %s", req.params.query);
 
     if (req.params.query){
         Conf.find({$or: [{"hostIdentification.friendlyName": /^[a-zA-Z0-9_\-.:]{3,}$/}, {"hostIdentification.fqdn": /^[a-zA-Z0-9_\-.:]{3,}$/}, {"hostIdentification.ip": /^[a-zA-Z0-9_\-.:]{3,}$/}, {"hostIdentification.url": /^[a-zA-Z0-9_\-.:]{3,}$/}]}, 'hostIdentification.friendlyName hostIdentification.fqdn hostIdentification.ip hostIdentification.url', function(err, confList) {
@@ -37,7 +37,10 @@ exports.search = function(req, res, next) {
                 console.log("All confs retrieved.");
                 var searchTerms = [];
                 confList.forEach(function(searchTerm){
-                    searchTerms.push(searchTerm.hostIdentification.friendlyName, searchTerm.hostIdentification.fqdn, searchTerm.hostIdentification.ip, searchTerm.hostIdentification.url);
+                    searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.friendlyName});
+                    searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.fqdn});
+                    searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.ip});
+                    searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.url});
                 });
                 res.send({found: searchTerms});
             }

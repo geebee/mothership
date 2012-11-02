@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!--{{{-->
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -8,56 +8,68 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script type="text/javascript" src="js/knockout-2.1.0.js"></script>
-    <script type="text/javascript" src="js/models/conf.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            ko.applyBindings(new ConfViewModel());
+            $.getScript("js/ko-utils/bindingHandlers.js", function() {
+                console.log("bindingHandlers loaded.");
+                $.getScript("js/ko-utils/protectedObservable.js", function() {
+                    console.log("protectedObservable util loaded.");
+                    $.getScript("js/models/conf.js", function() {
+                        console.log("ConfViewModel ready for initialization.");
+                        ko.applyBindings(new ConfViewModel());
+                    });
+
+                    var labels, mapped;
+                    $('#propertySearch').typeahead({
+                        minLength: 3,
+                        source: function (query, process) {
+                            $.get('/search', { query: query }, function (data) {
+                                labels = [];
+                                mapped = {};
+
+                                $.each(data.found, function(i, item) {
+                                    mapped[item.friendlyName] = {friendlyName: item.friendlyName, label: item.term + ' (' + item.friendlyName + ')'};
+                                    labels.push(item.term + ' (' + item.friendlyName + ')');
+                                });
+
+                                process(labels);
+                            });
+                        },
+                        updater: function(item) { 
+                            var friendlyName = item.match(/^.*\(([a-zA-Z0-9\-_.]+).*\)$/)[1];
+                            var selfObj = mapped[item];
+                            return item;
+                        }
+                    });
+                });
+            });
         });
     </script>
+    <style type="text/css">
+        #wholeBody {
+            margin:10px;
+        }
+    </style>
 </head>
 <body>
     <div id="wholeBody" class="row-fluid span12">
         <div id="topBar" class="row-fluid span12">
-            <h4>Configuration</h4>
+            <span class="span2 offset1"><strong>Configuration</strong></span>
+            <div id="searchBox" class="span4 offset1" style="">
+                <input type="text" id="propertySearch"i style="float:left;" data-provide="typeahead" placeholder="search..." />
+                <i class="icon-search" data-bind="click: function(e){console.log(e);}" style="position:relative; float: left; margin-top: 8px; right:20px;"></i>
+            </div> <!-- #searchBox.span2.offset6 -->
         </div> <!-- #topBar.row-fluid.span12 -->
-        <br/>
-        <div data-bind="with: hostIdentification" id="hostInformationArea" class="row-fluid span4 well" style="margin-left: 32%;">
-            <p>
-                Friendly Name:&nbsp;
-                <b data-bind="visible: !$root.editing(), text: friendlyName(), click: $root.edit">&nbsp;</b>
-                <span data-bind="visible: $root.editing">
-                    <input data-bind="visible: $root.editing, value: friendlyName, hasfocus: $root.editing" type="text" class="input-large" />&nbsp;
-                    <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
-                    <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
-                </span>
-                <br/>
-                FQDN:&nbsp;
-                <b data-bind="visible: !$root.editing(), text: fqdn(), click: $root.edit">&nbsp;</b>
-                <span data-bind="visible: $root.editing">
-                    <input data-bind="visible: $root.editing, value: fqdn, hasfocus: $root.editing" type="text" class="input-large" />&nbsp;
-                    <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
-                    <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
-                </span>
-                <br/>
-                IP:&nbsp;
-                <b data-bind="visible: !$root.editing(), text: ip(), click: $root.edit">&nbsp;</b>
-                <span data-bind="visible: $root.editing">
-                    <input data-bind="visible: $root.editing, value: ip, hasfocus: $root.editing" type="text" class="input-large" />&nbsp;
-                    <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
-                    <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
-                </span>
-                <br/>
-                URL:&nbsp;
-                <b data-bind="visible: !$root.editing(), text: url(), click: $root.edit">&nbsp;</b>
-                <span data-bind="visible: $root.editing">
-                    <input data-bind="value: url, hasfocus: $root.editing" type="text" class="input-large" />&nbsp;
-                    <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
-                    <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
-                </span>
-                <br/>
-            </p>
-        </div> <!-- #hostInformationArea.row-fluid.span10.container  -->
-        <div id="propertyArea" class="row-fluid span10" style="margin-left: 6%;">
+        <br/><!--}}}-->
+        <div data-bind="with: hostIdentification" id="hostInformationArea" class="row-fluid span4 well" style="margin-left: 32%;"><!--{{{-->
+            Friendly Name:&nbsp;<span><b data-bind="clickToEdit: friendlyName">&nbsp;</b></span><br/>
+            FQDN:&nbsp;<span><b data-bind="clickToEdit: fqdn">&nbsp;</b></span><br/>
+            IP:&nbsp;<span><b data-bind="clickToEdit: ip">&nbsp;</b></span><br/>
+            URL:&nbsp;<span><b data-bind="clickToEdit: url">&nbsp;</b></span><br/>
+        </div> <!-- #hostInformationArea.row-fluid.span10.container  --><!--}}}-->
+
+        <div id="propertyArea" class="row-fluid span10" style="margin-left: 6%;"><!--{{{-->
             <table class="table table-striped table-hover table-bordered">
                 <thead><tr>
                         <th style="width: 45%;">Key</th>
@@ -68,35 +80,32 @@
             </table>
             <button class="btn" data-bind="click: addProperty, enable: persistedProperties().length < 5">Add another property</button>
             <!-- <button class="btn" data-bind="click: save">Save</button> -->
-        </div> <!-- #propertyArea.container -->
+        </div> <!-- #propertyArea.container --><!--}}}-->
     </div> <!-- #wholeBody.row-fluid.span12  -->
 
-    <h4>What's Happening:</h4>
-    <textarea name="properties" data-bind="value: ko.toJSON(properties)"></textarea>
-
-    <script id="propertyTemplate" type="text/html">
+    <script id="viewTemplate" type="text/html"><!--{{{-->
         <tr>
             <td data-bind="text: key" style="table-layout: fixed; text-align: center; overflow: hidden;"></td>
             <td data-bind="text: value" style="table-layout: fixed; text-align: center; overflow: hidden;"></td>
             <td style="text-align:center;" class="buttons">
-                <i class="icon-edit" data-bind="click: $root.editProperty"></i>
+                <i class="icon-edit" data-bind="click: $root.editElement"></i>
                 <i class="icon-trash" data-bind="click: $root.removeProperty"></i>
             </td>
         </tr>
-    </script>
-    <script id="editTemplate" type="text/html">
+    </script><!--}}}--> 
+    <script id="editTemplate" type="text/html"><!--{{{-->
         <tr>
             <td style="text-align: center;">
-                <input data-bind="value: key "type="text" class="input-xlarge" placeholder="new key">
+                <input data-bind="value: key, hasfocus: key.focused" "type="text" class="input-xlarge" placeholder="new key" />
             </td>
             <td style="text-align: center;">
-                <input data-bind="value: value"type="text" class="input-xlarge" placeholder="new value">
+                <input data-bind="value: value" type="text" class="input-xlarge" placeholder="new value">
             </td>
             <td style="text-align: center;" class="buttons">
-                <i class="icon-ok" data-bind="click: $root.acceptPropertyEdit"></i>
-                <i class="icon-repeat" data-bind="click: $root.cancelPropertyEdit"></i>
+                <i class="icon-ok" data-bind="click: $root.acceptElementEdit"></i>
+                <i class="icon-repeat" data-bind="click: $root.cancelElementEdit"></i>
             </td>
         </tr>
-    </script>
+    </script><!--}}}-->
 </body>
 </html>
