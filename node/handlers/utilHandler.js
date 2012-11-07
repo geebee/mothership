@@ -28,19 +28,43 @@ exports.search = function(req, res, next) {
     console.log("Query: %s", req.params.query);
 
     if (req.params.query){
-        Conf.find({$or: [{"hostIdentification.friendlyName": /^[a-zA-Z0-9_\-.:]{3,}$/}, {"hostIdentification.fqdn": /^[a-zA-Z0-9_\-.:]{3,}$/}, {"hostIdentification.ip": /^[a-zA-Z0-9_\-.:]{3,}$/}, {"hostIdentification.url": /^[a-zA-Z0-9_\-.:]{3,}$/}]}, 'hostIdentification.friendlyName hostIdentification.fqdn hostIdentification.ip hostIdentification.url', function(err, confList) {
+        var startTime = Date.now();
+
+        Conf.find({$or: [
+            {"hostIdentification.friendlyName": /^[a-zA-Z0-9%=+_\-.:]{3,}$/},
+            {"hostIdentification.fqdn": /^[a-zA-Z0-9%=+_\-.:]{3,}$/},
+            {"hostIdentification.ip": /^[a-zA-Z0-9%=+_\-.:]{3,}$/},
+            {"hostIdentification.url": /^[a-zA-Z0-9%=+_\-.:]{3,}$/}
+        ]},
+        {
+            _id: false,
+            "hostIdentification.friendlyName" : true,
+            "hostIdentification.fqdn" : true,
+            "hostIdentification.ip" : true,
+            "hostIdentification.url" : true,
+        },
+        function(err, confList) {
             if (err) { //TODO: Handle the error for real
                 console.log("Error Retrieving all confs: " + err);
                 //TODO: Don't retardedly concatenate to an empty string
                 res.send({error: "" + err});
             } else {
-                console.log("All confs retrieved.");
+                console.log("Matched confs returned from mongo in: %sms.", Date.now() - startTime);
                 var searchTerms = [];
                 confList.forEach(function(searchTerm){
-                    searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.friendlyName});
-                    searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.fqdn});
-                    searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.ip});
-                    searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.url});
+                    console.log("Search Term: %s", searchTerm); 
+                    if (searchTerm.hostIdentification.friendlyName.indexOf(req.params.query) !== -1) {
+                        searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.friendlyName});
+                    }
+                    if (searchTerm.hostIdentification.fqdn.indexOf(req.params.query) !== -1) {
+                        searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.fqdn});
+                    }
+                    if (searchTerm.hostIdentification.ip.indexOf(req.params.query) !== -1) {
+                        searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.ip});
+                    }
+                    if (searchTerm.hostIdentification.url.indexOf(req.params.query) !== -1) {
+                        searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.url});
+                    }
                 });
                 res.send({found: searchTerms});
             }
