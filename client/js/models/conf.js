@@ -30,19 +30,6 @@ function ConfViewModel() {
     ]);
     *///}}}
     
-    // Load initial state from server, convert it to Property/HostIdentification instances, populate observables//{{{
-    $.getJSON("/conf/testConf", function(allData) {
-        var h = allData.hostIdentification;
-        var mappedHostIdentification = new HostIdentification(h.friendlyName, h.fqdn, h.ip, h.url);
-        var mappedProperties = $.map(allData.properties, function(p) { 
-            var keyName = Object.keys(p)[0];
-            return new Property(keyName, p[keyName]);
-        });
-
-        self.hostIdentification(mappedHostIdentification);
-        self.properties(mappedProperties);
-    });
-
     // Behaviors
     this.addProperty = function() {
         var newProperty = new Property("", "");
@@ -80,9 +67,27 @@ function ConfViewModel() {
         return ko.utils.arrayFilter(self.properties(), function(property) { return !property._destroy});
     });
 
-    this.saveHostIdentification = function() {
-        $.ajax("/conf/testConf/host", {
-            data: ko.toJson({properties: self.properties}),
+    this.loadConf = function(friendlyName){
+        console.log("loadConf - friendlyName: %s", friendlyName); 
+        // Load initial state from server, convert it to Property/HostIdentification instances, populate observables//{{{
+        $.getJSON("/conf/" + friendlyName, function(allData) {
+            var h = allData.hostIdentification;
+            var mappedHostIdentification = new HostIdentification(h.friendlyName, h.fqdn, h.ip, h.url);
+            var mappedProperties = $.map(allData.properties, function(p) { 
+                var keyName = Object.keys(p)[0];
+                return new Property(keyName, p[keyName]);
+            });
+
+            self.hostIdentification(mappedHostIdentification);
+            self.properties(mappedProperties);
+        });
+    };
+
+    this.saveHostIdentification = function(friendlyName) {
+        console.log("saveHostIdentification - friendlyName: %s", friendlyName); 
+        /*
+        $.ajax("/conf/" + friendlyName + "/host", {
+            data: ko.toJson({hostIdentification: self.hostIdentification}),
             type: "PUT",
             contentType: "application/json",
             success: function(result) { 
@@ -94,9 +99,12 @@ function ConfViewModel() {
                 $("#hostInformationArea span").addClass("control-group").addClass("error")
             }
         });
+        */
     };
 
-    this.saveProperties = function() {
+    this.upsertKeyValue= function(friendlyName, kvObject) {
+        console.log("upsertKeyValue - friendlyName: %s, kvObject: {%s: %s}", friendlyName, kvObject.key, kvObject.value); 
+        /*
         $.ajax("/conf/testConf/property", {
             data: ko.toJson({properties: self.properties}),
             type: "PUT",
@@ -110,5 +118,6 @@ function ConfViewModel() {
                 $("#propertyArea table tbody tr td").not(".buttons").addClass("control-group").addClass("error")
             }
         });
+        */
     };
 }
