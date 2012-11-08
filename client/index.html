@@ -17,7 +17,8 @@
                     console.log("protectedObservable util loaded.");
                     $.getScript("js/models/conf.js", function() {
                         console.log("ConfViewModel ready for initialization.");
-                        ko.applyBindings(new ConfViewModel());
+                        ko.applyBindings(cVM = new ConfViewModel());
+                        //this.loadConf("testConf");
                     });
 
                     var labels, mapped;
@@ -29,17 +30,30 @@
                                 mapped = {};
 
                                 $.each(data.found, function(i, item) {
-                                    mapped[item.friendlyName] = {friendlyName: item.friendlyName, label: item.term + ' (' + item.friendlyName + ')'};
-                                    labels.push(item.term + ' (' + item.friendlyName + ')');
+                                    var tempLabel = item.term + ' (' + item.friendlyName + ')';
+                                    mapped[tempLabel] = {friendlyName: item.friendlyName, label: tempLabel};
+                                    labels.push(tempLabel);
                                 });
 
                                 process(labels);
                             });
                         },
                         updater: function(item) { 
-                            var friendlyName = item.match(/^.*\(([a-zA-Z0-9\-_.]+).*\)$/)[1];
+                            console.log("typeahead.updater - item: %s", item);
                             var selfObj = mapped[item];
-                            return item;
+                            console.log("typeahead.updater - friendlyName: %s", selfObj.friendlyName);
+                            cVM.loadConf(selfObj.friendlyName);
+
+                            //replace " (friendlyName)" with nothing in the actual selection
+                            //this avoids unnecessary searches by backspacing through extraneous text
+                            return item.replace(/ \(.*\)$/,"");
+                        },
+                        highlighter: function(item) {
+                            console.log("typeahead.highlighter - item: %s", item);
+                            var selfObj = mapped[item];
+                            console.log("typeahead.highlighter- friendlyName: %s", selfObj.friendlyName);
+                            //do some modification of the output HTML for the list
+                            return item.replace(/ (\(.*\))$/, " <strong>(<i>" + selfObj.friendlyName + "</i>)</strong>");
                         }
                     });
                 });
@@ -58,7 +72,7 @@
             <span class="span2 offset1"><strong>Configuration</strong></span>
             <div id="searchBox" class="span4 offset1" style="">
                 <input type="text" id="propertySearch"i style="float:left;" data-provide="typeahead" placeholder="search..." />
-                <i class="icon-search" data-bind="click: function(e){console.log(e);}" style="position:relative; float: left; margin-top: 8px; right:20px;"></i>
+                <i class="icon-search" data-bind="click: function(e){/*e.loadConf('testConf')*/ console.log('clicked: %s', e);}" style="position:relative; float: left; margin-top: 8px; right:20px;"></i>
             </div> <!-- #searchBox.span2.offset6 -->
         </div> <!-- #topBar.row-fluid.span12 -->
         <br/><!--}}}-->
