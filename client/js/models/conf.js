@@ -83,12 +83,12 @@ function ConfViewModel() {
         });
     };
 
-    this.saveHostIdentification = function(friendlyName) {
-        console.log("saveHostIdentification - friendlyName: %s", friendlyName); 
+    this.deleteConf = function(e) {
+        console.log("deleteConf - friendlyName: %s", e.friendlyName()); 
         /*
         $.ajax("/conf/" + friendlyName + "/host", {
             data: ko.toJson({hostIdentification: self.hostIdentification}),
-            type: "PUT",
+            type: "DELETE",
             contentType: "application/json",
             success: function(result) { 
                 console.log(result);
@@ -101,6 +101,27 @@ function ConfViewModel() {
         });
         */
     };
+
+    this.saveHostIdentification = function(friendlyName, successCallback, failureCallback) {
+        console.log("saveHostIdentification - friendlyName: %s", friendlyName); 
+        hI = "{\"hostIdentification\": ";
+        hI += ko.toJSON(this.hostIdentification);
+        hI += "}";
+        console.log("saveHostIdentification - hostIdentification: %s", hI);
+
+        $.ajax("/conf/" + friendlyName + "/host", {
+            data: hI,
+            type: "PUT",
+            contentType: "application/json",
+            success: function(res, textStatus, jqXHR) {
+                successCallback(res, textStatus);
+            },
+            error: function(res, textStatus, errorThrown) {
+                failureCallback(res, textStatus);
+            } 
+        });
+    };
+
 
     this.upsertKeyValue= function(friendlyName, kvObject) {
         console.log("upsertKeyValue - friendlyName: %s, kvObject: {%s: %s}", friendlyName, kvObject.key, kvObject.value); 

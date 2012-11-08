@@ -10,17 +10,24 @@ ko.bindingHandlers.clickToEdit = {
         var pObservable = valueAccessor();
 
         var link = document.createElement("a");
-        var editField = document.createElement("span");
+        var editField = document.createElement("div");
+            editField.className = "control-group hiEdit";
+        var editFieldControls = document.createElement("div");
+            editFieldControls.className = "controls";
         var input = document.createElement("input");
             input.setAttribute("placeholder", pObservable());
+        var statusMessage = document.createElement("span");
+            statusMessage.className = "help-inline";
         var acceptButton = document.createElement("i");
             acceptButton.className = "icon-ok";
         var cancelButton = document.createElement("i");
             cancelButton.className = "icon-repeat";
             
-        editField.appendChild(input);
-        editField.appendChild(acceptButton);
-        editField.appendChild(cancelButton);
+        editFieldControls.appendChild(input);
+        editFieldControls.appendChild(statusMessage);
+        editFieldControls.appendChild(acceptButton);
+        editFieldControls.appendChild(cancelButton);
+        editField.appendChild(editFieldControls);
 
         element.appendChild(link);
         element.appendChild(editField);
@@ -30,11 +37,28 @@ ko.bindingHandlers.clickToEdit = {
 
         ko.applyBindingsToNode(acceptButton, {
             click: function() {
+                //console.log("cVM: %s", cVM);
                 pObservable.commit();
-                pObservable.editing(false);
-                pObservable.focused(false);
+                cVM.saveHostIdentification(cVM.hostIdentification().friendlyName(), function(res, textStatus){
+                    console.log("updated successfully.");
+                    $("#hostInformationArea div.control-group i").filter(":visible").hide();
+                    $("#hostInformationArea div.control-group").filter(":visible").addClass("success");
+                    $("#hostInformationArea div.control-group span.help-inline").filter(":visible").text("Updated.");
+                    setTimeout(function(){
+                        //$("#hostInformationArea div.control-group i").filter(".show();
+                        pObservable.editing(false);
+                        pObservable.focused(false);
+                        $("#hostInformationArea div.control-group").removeClass("success");
+                        $("#hostInformationArea div.control-group span.help-inline").text("");
+                    }, 3000);
+                },
+                function(res, textStatus){
+                    console.log("update failed.");
+                    $("#hostInformationArea div.control-group").addClass("error");
+                    $("#hostInformationArea div.control-group span.help-inline").text("Error.");
+                });
             }
-        });
+        }, cVM);
 
         ko.applyBindingsToNode(cancelButton, {
             click: function() {
