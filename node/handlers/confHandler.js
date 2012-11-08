@@ -97,15 +97,19 @@ exports.remove = function(req, res, next) {
 
 exports.modifyHost = function(req, res, next) {
     console.log("handler 'modifyConf'");
+    console.log("req.params: %j", req.params);
     console.log("Friendly Name: " + req.params.friendlyName);
 
-    Conf.findOneAndUpdate({"hostIdentification.friendlyName": req.params.friendlyName}, { $set: req.params.toUpdate}, function(err, numberAffected, rawResponse) {
+    //Conf.update({"hostIdentification.friendlyName": req.params.friendlyName}, { $set: req.params.hostIdentification}, function(err, numberAffected, rawResponse) {
+    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf){ 
         if (err) {
-            console.log("Error Updating User: " + err);
+            console.log("Error Updating hostIdentification: " + err);
             res.send({error: "" + err});
         } else {
-            console.log("Update Completed. Affected Documents: " + numberAffected);
-            res.send({"status": "successful", "affected": numberAffected});
+            conf.hostIdentification = req.params.hostIdentification;
+            conf.save();
+            console.log("Update Completed."); 
+            res.send({"status": "successful"});
         }
     });
 };
