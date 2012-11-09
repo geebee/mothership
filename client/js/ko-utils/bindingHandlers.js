@@ -41,7 +41,7 @@ ko.bindingHandlers.clickToEdit = {
                 pObservable.commit();
                 cVM.saveHostIdentification(cVM.hostIdentification().friendlyName(), function(res, textStatus){
                     console.log("updated successfully.");
-                    $("#hostInformationArea div.control-group i").filter(":visible").hide();
+                    //$("#hostInformationArea div.control-group i").filter(":visible").hide();
                     $("#hostInformationArea div.control-group").filter(":visible").addClass("success");
                     $("#hostInformationArea div.control-group span.help-inline").filter(":visible").text("Updated.");
                     setTimeout(function(){
@@ -50,7 +50,7 @@ ko.bindingHandlers.clickToEdit = {
                         pObservable.focused(false);
                         $("#hostInformationArea div.control-group").removeClass("success");
                         $("#hostInformationArea div.control-group span.help-inline").text("");
-                    }, 3000);
+                    }, 2000);
                 },
                 function(res, textStatus){
                     console.log("update failed.");
