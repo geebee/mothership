@@ -80,6 +80,17 @@ function ConfViewModel() {
 
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
+            
+            $("#propertyTable").tablesorter({
+                sortList: [
+                    [0,0],
+                    [1,0]
+                ],
+                headers: { 
+                    // assign the third column (we start counting zero) 
+                    2: { sorter: false }
+                } 
+            });
         });
     };
 
