@@ -11,7 +11,7 @@ ko.bindingHandlers.clickToEdit = {
 
         var link = document.createElement("a");
         var editField = document.createElement("div");
-            editField.className = "control-group hiEdit";
+            editField.className = "control-group inlineEditable";
         var editFieldControls = document.createElement("div");
             editFieldControls.className = "controls";
         var input = document.createElement("input");

@@ -63,8 +63,8 @@ function ConfViewModel() {
         return self.selectedElement() === property ? "editTemplate" : "viewTemplate";
     };
 
-    this.persistedProperties = ko.computed(function() {
-        return ko.utils.arrayFilter(self.properties(), function(property) { return !property._destroy});
+    this.destroyedProperties = ko.computed(function() {
+        return ko.utils.arrayFilter(self.properties(), function(property) { return property._destroy});
     });
 
     this.loadConf = function(friendlyName){
@@ -80,7 +80,7 @@ function ConfViewModel() {
 
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
-            
+
             $("#propertyTable").tablesorter({
                 sortList: [
                     [0,0],
