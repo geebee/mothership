@@ -21,6 +21,16 @@
                         ko.applyBindings(cVM = new ConfViewModel());
                     });
 
+                    $("#navItems li").click(function(e) {
+                        var $this = $(this);
+                        if (!$this.hasClass('active')) {
+                            $("#navItems li").filter(".active").removeClass("active");
+                            $this.addClass('active');
+                            console.log($(this).attr("id"));
+                        }
+                        e.preventDefault();
+                    });
+
                     var labels, mapped;
                     $('#propertySearch').typeahead({
                         minLength: 3,
