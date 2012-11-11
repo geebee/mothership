@@ -1,17 +1,17 @@
-// Class to represent a host identification entry
+// Class to represent a host identification entry//{{{
 function HostIdentification(friendlyName, fqdn, ip, url) {
     this.friendlyName = ko.protectedObservable(friendlyName);
     this.fqdn = ko.protectedObservable(fqdn);
     this.ip = ko.protectedObservable(ip);
     this.url = ko.protectedObservable(url);
     this.focused = ko.protectedObservable();
-}
-// Class to represent an individual property entry 
+}//}}}
+// Class to represent an individual property entry //{{{
 function Property(key, value) {
     this.key = ko.protectedObservable(key);
     this.key.focused = ko.observable();
     this.value = ko.protectedObservable(value);
-}
+}//}}}
 
 // Overall viewmodel for this screen, along with initial state
 function ConfViewModel() {
@@ -59,7 +59,7 @@ function ConfViewModel() {
         self.selectedElement(null);
     };
 
-    this.sortByKeys = function(i, e) {
+    this.sortByKeys = function(i, e) { //{{{ Table sorting functions
         this.properties.sort(function(left, right) {
             return left.key == right.key ? 0 : (left.key < right.key ? -1 : 1)
         });
@@ -102,7 +102,7 @@ function ConfViewModel() {
             $(e.target).removeClass("headerSortUp").addClass("headerSortDown");
             sortChanged = true;
         };
-    };
+    };//}}}
 
     this.templateToUse = function(property) {
         return self.selectedElement() === property ? "editTemplate" : "viewTemplate";
@@ -112,9 +112,9 @@ function ConfViewModel() {
         return ko.utils.arrayFilter(self.properties(), function(property) { return property._destroy});
     });
 
+    // Load initial state from server, convert it to Property/HostIdentification instances, populate observables//{{{
     this.loadConf = function(friendlyName){
         console.log("loadConf - friendlyName: %s", friendlyName); 
-        // Load initial state from server, convert it to Property/HostIdentification instances, populate observables//{{{
         $.getJSON("/conf/" + friendlyName, function(allData) {
             var h = allData.hostIdentification;
             var mappedHostIdentification = new HostIdentification(h.friendlyName, h.fqdn, h.ip, h.url);
@@ -127,10 +127,16 @@ function ConfViewModel() {
             self.properties(mappedProperties);
 
         });
-    };
+    };//}}}
 
     this.deleteConf = function(e) {
         console.log("deleteConf - friendlyName: %s", e.friendlyName()); 
+
+        $("#hostInformationArea").addClass("success-border");
+        setTimeout(function(){
+            $("#hostInformationArea").removeClass("success-border");
+        }, 2000);
+            
         /*
         $.ajax("/conf/" + friendlyName + "/host", {
             data: ko.toJson({hostIdentification: self.hostIdentification}),
@@ -148,7 +154,7 @@ function ConfViewModel() {
         */
     };
 
-    this.saveHostIdentification = function(friendlyName, successCallback, failureCallback) {
+    this.saveHostIdentification = function(friendlyName, successCallback, failureCallback) {//{{{
         console.log("saveHostIdentification - friendlyName: %s", friendlyName); 
         hI = "{\"hostIdentification\": ";
         hI += ko.toJSON(this.hostIdentification);
@@ -166,7 +172,7 @@ function ConfViewModel() {
                 failureCallback(res, textStatus);
             } 
         });
-    };
+    };//}}}
 
 
     this.upsertKeyValue= function(friendlyName, kvObject) {
