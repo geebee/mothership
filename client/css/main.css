@@ -16,14 +16,15 @@ table .header:after {
     visibility: hidden;
 }
 
+table .header:hover:after {
+    visibility: visible;
+}
+
 table .headerSortUp, table .headerSortDown {
     background-color: #f7f7f9;
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
 }
 
-table .header:hover:after {
-    visibility: visible;
-}
 
 table .headerSortDown:after, table .headerSortDown:hover:after {
     visibility: visible;

@@ -59,6 +59,51 @@ function ConfViewModel() {
         self.selectedElement(null);
     };
 
+    this.sortByKeys = function(i, e) {
+        this.properties.sort(function(left, right) {
+            return left.key == right.key ? 0 : (left.key < right.key ? -1 : 1)
+        });
+
+        var sortChanged = false;
+        if ($(e.target).hasClass("noSort")) { 
+            console.log("has noSort");
+            $(e.target).removeClass("noSort").addClass("headerSortDown");
+        };
+        if ($(e.target).hasClass("headerSortDown") && !sortChanged) {
+            console.log("has headerSortDown");
+            $(e.target).removeClass("headerSortDown").addClass("headerSortUp");
+            sortChanged = true;
+        };
+        if ($(e.target).hasClass("headerSortUp") && !sortChanged) {
+            console.log("has headerSortUp");
+            $(e.target).removeClass("headerSortUp").addClass("headerSortDown");
+            sortChanged = true;
+        };
+            
+    };
+
+    this.sortByValues = function(i,e) {
+        this.properties.sort(function(left, right) {
+            return left.value == right.value ? 0 : (left.value < right.value ? -1 : 1)
+        });
+
+        var sortChanged = false;
+        if ($(e.target).hasClass("noSort")) { 
+            console.log("has noSort");
+            $(e.target).removeClass("noSort").addClass("headerSortDown");
+        };
+        if ($(e.target).hasClass("headerSortDown") && !sortChanged) {
+            console.log("has headerSortDown");
+            $(e.target).removeClass("headerSortDown").addClass("headerSortUp");
+            sortChanged = true;
+        };
+        if ($(e.target).hasClass("headerSortUp") && !sortChanged) {
+            console.log("has headerSortUp");
+            $(e.target).removeClass("headerSortUp").addClass("headerSortDown");
+            sortChanged = true;
+        };
+    };
+
     this.templateToUse = function(property) {
         return self.selectedElement() === property ? "editTemplate" : "viewTemplate";
     };
@@ -81,16 +126,6 @@ function ConfViewModel() {
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
 
-            $("#propertyTable").tablesorter({
-                sortList: [
-                    [0,0],
-                    [1,0]
-                ],
-                headers: { 
-                    // assign the third column (we start counting zero) 
-                    2: { sorter: false }
-                } 
-            });
         });
     };
 
