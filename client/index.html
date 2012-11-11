@@ -65,12 +65,17 @@
             <div id="navBarInner" class="navbar-inner">
                 <a id="navTitle" class="brand" href="#">mothership...</a>
                 <ul id="navItems" class="nav">
-                    <li><a href="#">Home</a></li>
+                    <li id="findConfig" data-bind="click: focusSearch"><a href="#">Find a Config</a></li>
+                    <li id="currentConfig" class="active"><a href="#">Current Config</a></li>
+                    <li id="addConfig"><a href="#">Add a Config</a></li>
                 </ul>
-                <form id="searchBox" data-bind="submit: function(){return false;}" class="navbar-search pull-right" autocomplete="off">
-                    <input type="text" id="propertySearch" class="search-query input-xlarge" data-provide="typeahead" placeholder="search..." data-bind="hasfocus:true"/>
-                    <i class="icon-search" style="position: relative; left: -12%;"></i>
-                </form> <!-- #searchBox -->
+                <div id="searchContainer" class="pull-right">
+                    <ul class="nav"><li class="divider-vertical"></li></ul>
+                    <form id="searchBox" data-bind="submit: function(){return false;}" class="navbar-search" autocomplete="off">
+                        <input type="text" id="propertySearch" class="search-query input-xlarge" data-provide="typeahead" placeholder="search..." data-bind="hasfocus:searchFocused"/>
+                        <i class="icon-search" style="position: relative; left: -12%;"></i>
+                    </form> <!-- #searchBox -->
+                </div> <!-- #searchContainer -->
             </div> <!-- #navBarInner.navbar-inner -->
         </div> <!-- #navBarFrame.navbar -->
         <br/><!--}}}-->

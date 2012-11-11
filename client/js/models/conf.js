@@ -19,6 +19,8 @@ function ConfViewModel() {
     this.hostIdentification = ko.observable();
     this.properties = ko.observableArray([]);
     this.selectedElement = ko.observable();
+    this.searchFocused = ko.observable(true);
+    this.focusSearch = function() { this.searchFocused(true); };
 
     /*//{{{ Set fake initial state...
     self.hostIdentification = ko.observable(new HostIdentification("testConf", "a.b.c", "127.0.0.1", "http://a.b.c/url"));
