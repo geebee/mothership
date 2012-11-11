@@ -1,5 +1,5 @@
 upstream mothership_pool {
-    server 127.0.0.1:8889       fail_timeout=5s max_fails=3s;
+    server 127.0.0.1:8889       fail_timeout=5s max_fails=3;
     # server 127.0.0.1:8889     weight=5; # reqs are distributed round-robin based on weights (default:1)
     # server 127.0.0.1:8889     backup; # backup servers are only used if all non-backups are unavailable
     # server 127.0.0.1:8889     down;# a down server will never receive a request
