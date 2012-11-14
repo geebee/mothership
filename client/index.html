@@ -54,6 +54,10 @@
                             console.log("typeahead.updater - friendlyName: %s", selfObj.friendlyName);
                             cVM.loadConf(selfObj.friendlyName);
 
+                            $("#navItems li").filter(".active").removeClass("active");
+                            $("#navItems li#currentConfig").addClass("active");
+                            cVM.focusSearch(false);
+
                             //replace " (friendlyName)" with nothing in the actual selection
                             //this avoids unnecessary searches by backspacing through extraneous text
                             return item.replace(/ \(.*\)$/,"");
@@ -76,7 +80,7 @@
                 <a id="navTitle" class="brand" href="#">mothership...</a>
                 <ul id="navItems" class="nav">
                     <li id="findConfig" data-bind="click: focusSearch"><a href="#">Find a Config</a></li>
-                    <li id="currentConfig" class="active"><a href="#">Current Config</a></li>
+                    <li id="currentConfig"><a href="#">Current Config</a></li>
                     <li id="addConfig"><a href="#">Add a Config</a></li>
                 </ul>
                 <div id="searchContainer" class="pull-right">
@@ -89,7 +93,7 @@
             </div> <!-- #navBarInner.navbar-inner -->
         </div> <!-- #navBarFrame.navbar -->
         <br/><!--}}}-->
-        <div data-bind="with: hostIdentification" id="hostInformationArea" class="row-fluid well" style="width: 36%; margin-left: 32%;"><!--{{{-->
+        <div data-bind="visible:hostIdentification, with: hostIdentification" id="hostInformationArea" class="row-fluid well" style="width: 36%; margin-left: 32%;"><!--{{{-->
             <div class="hiElement">Friendly Name:&nbsp;<b data-bind="text: friendlyName">&nbsp;</b></div>
             <div class="hiElement">FQDN:&nbsp;<b data-bind="clickToEdit: fqdn">&nbsp;</b></div>
             <div class="hiElement">IP:&nbsp;<b data-bind="clickToEdit: ip">&nbsp;</b></div>
@@ -97,7 +101,7 @@
             <button data-bind="click: $parent.deleteConf"class="btn btn-block btn-danger" type="button">Delete Configuration</button>
         </div> <!-- #hostInformationArea.row-fluid.span10.container  --><!--}}}-->
 
-        <div id="propertyArea" class="row-fluid span10" style="margin-left: 6%;"><!--{{{-->
+        <div id="propertyArea" data-bind="visible:properties().length > 0" class="row-fluid span10" style="margin-left: 6%;"><!--{{{-->
             <table id="propertyTable" class="table table-striped table-hover table-bordered">
                 <thead><tr>
                         <th data-bind="click: $root.sortByKeys" class="header noSort" style="width: 45%; text-align: center;">Key</th>
@@ -123,7 +127,7 @@
     <script id="editTemplate" type="text/html"><!--{{{-->
         <tr>
             <td style="text-align: center;">
-                <input data-bind="value: key, hasfocus: key.focused" "type="text" class="input-xlarge" placeholder="new key" />
+                <input data-bind="value: key, hasfocus: key.focused()" "type="text" class="input-xlarge" placeholder="new key" />
             </td>
             <td style="text-align: center;">
                 <input data-bind="value: value" type="text" class="input-xlarge" placeholder="new value">

@@ -39,7 +39,7 @@ ko.bindingHandlers.clickToEdit = {
             click: function() {
                 //console.log("cVM: %s", cVM);
                 pObservable.commit();
-                cVM.saveHostIdentification(cVM.hostIdentification().friendlyName(), function(res, textStatus){
+                cVM.saveHostIdentification(cVM.hostIdentification().friendlyName, function(res, textStatus){
                     console.log("updated successfully.");
                     //$("#hostInformationArea div.control-group i").filter(":visible").hide();
                     $("#hostInformationArea div.control-group").filter(":visible").addClass("success");

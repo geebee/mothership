@@ -9,8 +9,9 @@ var ConfSchema = new mongoose.Schema({
         fqdn: {type: String, required: true, index:true},
         ip: {type: String, required: true, index:true},
         url: {type: String, required: true, index:true},
+        environment: {type: String, index:true},
     },
-    properties: {}
+    properties: [mongoose.Schema.Types.Mixed]
 });
 
 ConfSchema.plugin(createdAndModifiedDates);

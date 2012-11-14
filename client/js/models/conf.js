@@ -1,6 +1,7 @@
 // Class to represent a host identification entry//{{{
 function HostIdentification(friendlyName, fqdn, ip, url) {
-    this.friendlyName = ko.protectedObservable(friendlyName);
+    //this.friendlyName = ko.protectedObservable(friendlyName);
+    this.friendlyName = friendlyName;
     this.fqdn = ko.protectedObservable(fqdn);
     this.ip = ko.protectedObservable(ip);
     this.url = ko.protectedObservable(url);
@@ -17,10 +18,17 @@ function Property(key, value) {
 function ConfViewModel() {
     var self = this;
     this.hostIdentification = ko.observable();
+    this.friendlyName = "";
     this.properties = ko.observableArray([]);
     this.selectedElement = ko.observable();
     this.searchFocused = ko.observable(true);
-    this.focusSearch = function() { this.searchFocused(true); };
+    this.focusSearch = function(focus) { 
+        if (focus === false) {
+            this.searchFocused(false);
+        } else {
+            this.searchFocused(true);
+        }
+    };
 
     /*//{{{ Set fake initial state...
     self.hostIdentification = ko.observable(new HostIdentification("testConf", "a.b.c", "127.0.0.1", "http://a.b.c/url"));
@@ -33,35 +41,41 @@ function ConfViewModel() {
     *///}}}
     
     // Behaviors
+    // Add and remove properties//{{{
     this.addProperty = function() {
         var newProperty = new Property("", "");
         self.properties.push(newProperty);
         self.selectedElement(newProperty);
+        newProperty.key.focused(true);
     };
     
     this.removeProperty = function(property) {
         self.properties.destroy(property);
         self.selectedElement(null);
-    };
+    };//}}}
 
+    // Edit Property, Accept/Cancel Property Edits {{{
     this.editElement = function(item) {
         self.selectedElement(item);
         item.key.focused(true);
     };
 
-    this.acceptElementEdit = function(e) {
+    this.acceptElementEdit = function(i, e) {
         self.selectedElement().key.commit();
         self.selectedElement().value.commit();
         self.selectedElement(null);
+        var kvObject = ko.toJS(i);
+        self.upsertKeyValue(self.friendlyName, kvObject);
     };
 
-    this.cancelElementEdit = function(e) {
+    this.cancelElementEdit = function() {
         self.selectedElement().key.reset();
         self.selectedElement().value.reset();
         self.selectedElement(null);
-    };
+    }; //}}}
 
-    this.sortByKeys = function(i, e) { //{{{ Table sorting functions
+    // Table sorting functions {{{ 
+    this.sortByKeys = function(i, e) {
         this.properties.sort(function(left, right) {
             return left.key == right.key ? 0 : (left.key < right.key ? -1 : 1)
         });
@@ -114,16 +128,22 @@ function ConfViewModel() {
         return ko.utils.arrayFilter(self.properties(), function(property) { return property._destroy});
     });
 
-    // Load initial state from server, convert it to Property/HostIdentification instances, populate observables//{{{
+    // Load initial state from server, map to Property/HostIdentification instances, populate observables {{{
     this.loadConf = function(friendlyName){
+        self.friendlyName = friendlyName;
         console.log("loadConf - friendlyName: %s", friendlyName); 
         $.getJSON("/conf/" + friendlyName, function(allData) {
             var h = allData.hostIdentification;
             var mappedHostIdentification = new HostIdentification(h.friendlyName, h.fqdn, h.ip, h.url);
-            var mappedProperties = $.map(allData.properties, function(p) { 
-                var keyName = Object.keys(p)[0];
-                return new Property(keyName, p[keyName]);
-            });
+            console.dir(allData.properties);
+            if (!(allData.properties instanceof Array)) {
+                var mappedProperties = [];
+                mappedProperties.push(new Property(allData.properties.key, allData.properties.value));
+            } else {
+                var mappedProperties = $.map(allData.properties, function(p) { 
+                    return new Property(p.key, p.value);
+                });
+            }
 
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
@@ -131,6 +151,7 @@ function ConfViewModel() {
         });
     };//}}}
 
+    // Delete loaded config from the server {{{
     this.deleteConf = function(e) {
         console.log("deleteConf - friendlyName: %s", e.friendlyName()); 
 
@@ -154,9 +175,10 @@ function ConfViewModel() {
             }
         });
         */
-    };
+    };//}}}
 
-    this.saveHostIdentification = function(friendlyName, successCallback, failureCallback) {//{{{
+    // Save hostIdentification part of the config {{{
+    this.saveHostIdentification = function(friendlyName, successCallback, failureCallback) {
         console.log("saveHostIdentification - friendlyName: %s", friendlyName); 
         hI = "{\"hostIdentification\": ";
         hI += ko.toJSON(this.hostIdentification);
@@ -176,23 +198,24 @@ function ConfViewModel() {
         });
     };//}}}
 
-
+    // Update or insert a key/value pair on this config {{{
     this.upsertKeyValue= function(friendlyName, kvObject) {
         console.log("upsertKeyValue - friendlyName: %s, kvObject: {%s: %s}", friendlyName, kvObject.key, kvObject.value); 
-        /*
-        $.ajax("/conf/testConf/property", {
-            data: ko.toJson({properties: self.properties}),
+        $.ajax("/conf/" + friendlyName + "/property", {
+            processData: false,
+            data: ko.toJSON({"friendlyName": friendlyName, "toUpdate": kvObject}),
             type: "PUT",
             contentType: "application/json",
             success: function(result) { 
+                console.log("success.");
                 console.log(result);
-                $("#propertyArea table tbody tr td").not(".buttons").addClass("control-group").addClass("success")
+                //$("#propertyArea table tbody tr td").not(".buttons").addClass("control-group").addClass("success")
             },
             failure: function(result) {
+                console.log("failure.");
                 console.log(result);
-                $("#propertyArea table tbody tr td").not(".buttons").addClass("control-group").addClass("error")
+                //$("#propertyArea table tbody tr td").not(".buttons").addClass("control-group").addClass("error")
             }
         });
-        */
-    };
+    }; //}}}
 }

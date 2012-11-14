@@ -27,14 +27,14 @@ exports.single = function(req, res, next) {
             res.send({error: "" + err});
         } else {
             console.log("Conf: " + req.params.friendlyName + " retrieved.");
+            console.log("Conf: %j", conf);
             if (req.params.style){
                 switch(req.params.style) {
                     case "raw":
                         console.log("Style was raw");
                         var mappedProperties = ""; 
                         conf.properties.forEach(function(p){ 
-                            var keyName = Object.keys(p)[0];
-                            mappedProperties = mappedProperties + keyName + "=" + p[keyName] + "\n";
+                            mappedProperties = mappedProperties + p.key + "=" + p.value + "\n";
                         });  
                         res.writeHead(200, {'Content-Type': 'text/plain'});
                         res.end(mappedProperties);
@@ -43,8 +43,7 @@ exports.single = function(req, res, next) {
                         console.log("Style was quoted");
                         var mappedProperties = ""; 
                         conf.properties.forEach(function(p){ 
-                            var keyName = Object.keys(p)[0];
-                            mappedProperties = mappedProperties + "\"" + keyName + "\"=\"" + p[keyName] + "\"\n";
+                            mappedProperties = mappedProperties + "\"" + p.key + "\"=\"" + p.value + "\"\n";
                         });  
                         res.writeHead(200, {'Content-Type': 'text/plain'});
                         res.end(mappedProperties);
@@ -53,8 +52,7 @@ exports.single = function(req, res, next) {
                         console.log("Style was json");
                         var mappedProperties = {};
                         conf.properties.forEach(function(p){ 
-                            var keyName = Object.keys(p)[0];
-                            mappedProperties[keyName] = p[keyName];
+                            mappedProperties[p.key] = p.value;
                         });  
                         res.send(mappedProperties);
                         break;
@@ -62,9 +60,8 @@ exports.single = function(req, res, next) {
                         console.log("Style was properties");
                         var mappedProperties = ""; 
                         conf.properties.forEach(function(p){ 
-                            var keyName = Object.keys(p)[0];
-                            var fixedKey = keyName.replace(/\s/g,".");
-                            mappedProperties = mappedProperties + fixedKey + "=" + p[keyName] + "\n";
+                            var fixedKey = p.key.replace(/\s/g,".");
+                            mappedProperties = mappedProperties + fixedKey + "=" + p.value + "\n";
                         });  
                         res.writeHead(200, {'Content-Type': 'text/plain'});
                         res.end(mappedProperties);
@@ -100,31 +97,61 @@ exports.modifyHost = function(req, res, next) {
     console.log("req.params: %j", req.params);
     console.log("Friendly Name: " + req.params.friendlyName);
 
-    //Conf.update({"hostIdentification.friendlyName": req.params.friendlyName}, { $set: req.params.hostIdentification}, function(err, numberAffected, rawResponse) {
     Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf){ 
         if (err) {
             console.log("Error Updating hostIdentification: " + err);
             res.send({error: "" + err});
         } else {
             conf.hostIdentification = req.params.hostIdentification;
-            conf.save();
-            console.log("Update Completed."); 
-            res.send({"status": "successful"});
+            console.log(conf);
+            conf.save(function(err, data) {
+                if (err) {
+                    console.log("error: " + err);
+                    res.send({"error": "" + err});
+                } else {
+                    console.log("Update Completed."); 
+                    res.send({"status": "successful"});
+                }
+            });
         }
     });
 };
 
-exports.addProperty = function(req, res, next) {
-    console.log("handler 'addProperty'");
+exports.updateProperty = function(req, res, next) {
+    console.log("handler 'updateProperty'");
     console.log("Friendly Name: " + req.params.friendlyName);
+    console.log("kvObject to update: {%s: %s}", req.params.toUpdate.key, req.params.toUpdate.value);
 
-    Conf.findOneAndUpdate({"hostIdentification.friendlyName": req.params.friendlyName}, { $set: req.params.toUpdate}, function(err, numberAffected, rawResponse) {
+    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf){ 
         if (err) {
-            console.log("Error Updating User: " + err);
+            console.log("Error Updating kvObject: " + err);
             res.send({error: "" + err});
         } else {
-            console.log("Update Completed. Affected Documents: " + numberAffected);
-            res.send({"status": "successful", "affected": numberAffected});
+            //var updatedProperties = [{'key': 'key1', 'value': 'value1'}];
+            var updatedProperties = [];
+            conf.properties.forEach(function(p){
+                if (p.key === req.params.toUpdate.key){
+                    console.log("request key: %s, matches array key: %s. Updating (old value: %s) with value: %s", req.params.toUpdate.key, p.key, p.value, req.params.toUpdate.value);
+                    updatedProperties.push({"key": p.key, "value": req.params.toUpdate.value});
+                } else {
+                    console.log("request key: %s, does not match array key: %s", req.params.toUpdate.key, p.key);
+                    updatedProperties.push({"key": p.key, "value": p.value});
+                }
+            });
+
+            console.log("uP: %j", updatedProperties);
+            conf.properties = updatedProperties;
+
+            console.log(conf);
+            conf.save(function(err, data) {
+                if (err) {
+                    console.log("error: " + err);
+                    res.send({"error": "" + err});
+                } else {
+                    console.log("Update Completed."); 
+                    res.send({"status": "successful"});
+                }
+            });
         }
     });
 };
