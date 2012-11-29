@@ -1,11 +1,12 @@
 // Class to represent a host identification entry//{{{
-function HostIdentification(friendlyName, fqdn, ip, url) {
+function HostIdentification(friendlyName, fqdn, ip, url, environment) {
     //this.friendlyName = ko.protectedObservable(friendlyName);
     this.friendlyName = friendlyName;
     this.fqdn = ko.protectedObservable(fqdn);
     this.ip = ko.protectedObservable(ip);
     this.url = ko.protectedObservable(url);
-    this.focused = ko.protectedObservable();
+    this.environment = ko.protectedObservable(environment);
+    this.focused = ko.observable();
 }//}}}
 // Class to represent an individual property entry //{{{
 function Property(key, value) {
@@ -19,6 +20,7 @@ function ConfViewModel() {
     var self = this;
     this.hostIdentification = ko.observable();
     this.friendlyName = "";
+    this.version = ko.observable(0);
     this.properties = ko.observableArray([]);
     this.selectedElement = ko.observable();
     this.searchFocused = ko.observable(true);
@@ -30,16 +32,6 @@ function ConfViewModel() {
         }
     };
 
-    /*//{{{ Set fake initial state...
-    self.hostIdentification = ko.observable(new HostIdentification("testConf", "a.b.c", "127.0.0.1", "http://a.b.c/url"));
-
-    self.properties = ko.observableArray([
-        new Property("key1", "value1"),
-        new Property("key2", "value2"),
-        new Property("key3", "value3")
-    ]);
-    *///}}}
-    
     // Behaviors
     // Add and remove properties//{{{
     this.addProperty = function() {
@@ -120,6 +112,18 @@ function ConfViewModel() {
         };
     };//}}}
 
+    this.toggleVersions = function(i, e) {
+        console.log("i: %s, e: %s", i, e);
+        console.log('clicked versions link');
+        location.hash = "versionsPage";
+
+        var vP = $("#versionsPage");
+        vP.toggle();
+        vP.addClass('fadedIn');
+            
+        e.preventDefault();
+    };
+
     this.templateToUse = function(property) {
         return self.selectedElement() === property ? "editTemplate" : "viewTemplate";
     };
@@ -133,8 +137,9 @@ function ConfViewModel() {
         self.friendlyName = friendlyName;
         console.log("loadConf - friendlyName: %s", friendlyName); 
         $.getJSON("/conf/" + friendlyName, function(allData) {
+            console.dir(allData);
             var h = allData.hostIdentification;
-            var mappedHostIdentification = new HostIdentification(h.friendlyName, h.fqdn, h.ip, h.url);
+            var mappedHostIdentification = new HostIdentification(h.friendlyName, h.fqdn, h.ip, h.url, h.environment);
             console.dir(allData.properties);
             if (!(allData.properties instanceof Array)) {
                 var mappedProperties = [];
@@ -145,6 +150,7 @@ function ConfViewModel() {
                 });
             }
 
+            self.version(allData._version);
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
 

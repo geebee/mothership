@@ -6,98 +6,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-    <script type="text/javascript" src="js/knockout-2.1.0.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
-    <script type="text/javascript"><!--{{{ document.ready -->
-        $(document).ready(function() {
-            $.getScript("js/ko-utils/bindingHandlers.js", function() {
-                console.log("bindingHandlers loaded.");
-                $.getScript("js/ko-utils/protectedObservable.js", function() {
-                    console.log("protectedObservable util loaded.");
-                    $.getScript("js/models/conf.js", function() {
-                        console.log("ConfViewModel ready for initialization.");
-                        ko.applyBindings(cVM = new ConfViewModel());
-                    });
-
-                    $("#navItems li").click(function(e) {
-                        var $this = $(this);
-                        if (!$this.hasClass('active')) {
-                            $("#navItems li").filter(".active").removeClass("active");
-                            $this.addClass('active');
-                            console.log($(this).attr("id"));
-                        }
-                        e.preventDefault();
-                    });
-
-                    var labels, mapped;
-                    $('#propertySearch').typeahead({
-                        minLength: 3,
-                        source: function (query, process) {
-                            $.get('/search', { query: query }, function (data) {
-                                labels = [];
-                                mapped = {};
-
-                                $.each(data.found, function(i, item) {
-                                    var tempLabel = item.term + ' (' + item.friendlyName + ')';
-                                    mapped[tempLabel] = {friendlyName: item.friendlyName, label: tempLabel};
-                                    labels.push(tempLabel);
-                                });
-
-                                process(labels);
-                            });
-                        },
-                        updater: function(item) { 
-                            //console.log("typeahead.updater - item: %s", item);
-                            var selfObj = mapped[item];
-                            console.log("typeahead.updater - friendlyName: %s", selfObj.friendlyName);
-                            cVM.loadConf(selfObj.friendlyName);
-
-                            $("#navItems li").filter(".active").removeClass("active");
-                            $("#navItems li#currentConfig").addClass("active");
-                            cVM.focusSearch(false);
-
-                            //replace " (friendlyName)" with nothing in the actual selection
-                            //this avoids unnecessary searches by backspacing through extraneous text
-                            return item.replace(/ \(.*\)$/,"");
-                        },
-                        highlighter: function(item) {
-                            var selfObj = mapped[item];
-                            //do some modification of the output HTML for the list
-                            return item.replace(/ (\(.*\))$/, " <strong>(<i>" + selfObj.friendlyName + "</i>)</strong>");
-                        }
-                    });
-                });
-            });
-        });
-    </script><!--}}}-->
 </head>
 <body>
-    <div id="wholeBody" class="row-fluid span12">
-        <div id="navBarFrame" class="navbar">
-            <div id="navBarInner" class="navbar-inner">
-                <a id="navTitle" class="brand" href="#">mothership...</a>
-                <ul id="navItems" class="nav">
-                    <li id="findConfig" data-bind="click: focusSearch"><a href="#">Find a Config</a></li>
-                    <li id="currentConfig"><a href="#">Current Config</a></li>
-                    <li id="addConfig"><a href="#">Add a Config</a></li>
-                </ul>
-                <div id="searchContainer" class="pull-right">
-                    <ul class="nav"><li class="divider-vertical"></li></ul>
-                    <form id="searchBox" data-bind="submit: function(){return false;}" class="navbar-search" autocomplete="off">
-                        <input type="text" id="propertySearch" class="search-query input-xlarge" data-provide="typeahead" placeholder="search..." data-bind="hasfocus:searchFocused"/>
-                        <i class="icon-search" style="position: relative; left: -12%;"></i>
-                    </form> <!-- #searchBox -->
-                </div> <!-- #searchContainer -->
-            </div> <!-- #navBarInner.navbar-inner -->
-        </div> <!-- #navBarFrame.navbar -->
-        <br/><!--}}}-->
-        <div data-bind="visible:hostIdentification, with: hostIdentification" id="hostInformationArea" class="row-fluid well" style="width: 36%; margin-left: 32%;"><!--{{{-->
+    <div id="navBarFrame" class="navbar">
+        <div id="navBarInner" class="navbar-inner">
+            <a id="navTitle" class="brand" href="#">mothership...</a>
+            <ul id="navItems" class="nav">
+                <li id="home"><a href="#home">Home</a></li>
+                <li id="findConfig" data-bind="click: focusSearch"><a href="#findConfig">Find a Config</a></li>
+                <li id="currentConfig"><a href="#currentConfig">Current Config</a></li>
+                <li id="addConfig"><a href="#addConfig">Add a Config</a></li>
+            </ul>
+            <div id="searchContainer" class="pull-right">
+                <ul class="nav"><li class="divider-vertical"></li></ul>
+                <form id="searchBox" data-bind="submit: function(){return false;}" class="navbar-search" autocomplete="off">
+                    <input type="text" id="propertySearch" class="search-query input-xlarge" data-provide="typeahead" placeholder="search..." data-bind="hasfocus:searchFocused"/>
+                    <i class="icon-search" style="position: relative; left: -12%;"></i>
+                </form> <!-- #searchBox -->
+            </div> <!-- #searchContainer -->
+        </div> <!-- #navBarInner.navbar-inner -->
+    </div> <!-- #navBarFrame.navbar -->
+    <br/><!--}}}-->
+
+    <div id="versionsPage" class="fadedOut">
+        <h5>I'm here!</h5>
+    </div> <!-- div#versionsPage.fadedOut -->
+    <div id="guestHome" class="pageContainer row-fluid span12"> <!-- {{{ -->
+        <div id="wordCloud">
+        </div> <!-- div#wordCloud -->
+    </div> <!-- div#guestHome.pageContainer.row-fluid.span12 }}}-->
+
+    <div id="editConfig" class="pageContainer row-fluid span12">
+        <div data-bind="visible:hostIdentification, with: hostIdentification" id="hostInformationArea" class="row-fluid well span5" style="margin-left: 32%;"><!--{{{-->
+            <div id="fanVersions" class="pull-right">
+                Version:&nbsp;<b><a href="#versionsPage" data-bind="text: $root.version, click: $root.toggleVersions()">&nbsp;</a></b>
+            </div> <!-- div#fanVersions -->
             <div class="hiElement">Friendly Name:&nbsp;<b data-bind="text: friendlyName">&nbsp;</b></div>
             <div class="hiElement">FQDN:&nbsp;<b data-bind="clickToEdit: fqdn">&nbsp;</b></div>
             <div class="hiElement">IP:&nbsp;<b data-bind="clickToEdit: ip">&nbsp;</b></div>
-            <div class="hiElement">URL:&nbsp;<b data-bind="clickToEdit: url">&nbsp;</b></div><br/>
+            <div class="hiElement">URL:&nbsp;<b data-bind="clickToEdit: url">&nbsp;</b></div>
+            <div class="hiElement">Environment:&nbsp;<b data-bind="clickToEdit: environment">&nbsp;</b></div><br/>
             <button data-bind="click: $parent.deleteConf"class="btn btn-block btn-danger" type="button">Delete Configuration</button>
         </div> <!-- #hostInformationArea.row-fluid.span10.container  --><!--}}}-->
 
@@ -111,10 +59,11 @@
                 <tbody data-bind="template: {name: templateToUse, foreach: properties()}"></tbody>
             </table>
             <button class="btn" data-bind="click: addProperty">Add property</button>
-        </div> <!-- #propertyArea.container --><!--}}}-->
-    </div> <!-- #wholeBody.row-fluid.span12  -->
+        </div> <!-- #propertyArea.container }}}-->
+    </div> <!-- #editConfig.pageContainer.row-fluid.span12  -->
 
-    <script id="viewTemplate" type="text/html"><!--{{{-->
+    <!-- View and Edit Templates -->
+    <script id="viewTemplate" type="text/html">
         <tr>
             <td data-bind="text: key" style="table-layout: fixed; text-align: center; overflow: hidden;"></td>
             <td data-bind="text: value" style="table-layout: fixed; text-align: center; overflow: hidden;"></td>
@@ -123,20 +72,130 @@
                 <i class="icon-trash" data-bind="click: $root.removeProperty"></i>
             </td>
         </tr>
-    </script><!--}}}--> 
-    <script id="editTemplate" type="text/html"><!--{{{-->
-        <tr>
-            <td style="text-align: center;">
-                <input data-bind="value: key, hasfocus: key.focused()" "type="text" class="input-xlarge" placeholder="new key" />
-            </td>
-            <td style="text-align: center;">
-                <input data-bind="value: value" type="text" class="input-xlarge" placeholder="new value">
-            </td>
-            <td style="text-align: center;" class="buttons">
-                <i class="icon-ok" data-bind="click: $root.acceptElementEdit"></i>
-                <i class="icon-repeat" data-bind="click: $root.cancelElementEdit"></i>
-            </td>
-        </tr>
-    </script><!--}}}-->
+    </script>
+
+    <script id="editTemplate" type="text/html">
+            <tr>
+                <td style="text-align: center;">
+                    <input data-bind="value: key, hasfocus: key.focused()" "type="text" class="input-xlarge" placeholder="new key" />
+                </td>
+                <td style="text-align: center;">
+                    <input data-bind="value: value" type="text" class="input-xlarge" placeholder="new value">
+                </td>
+                <td style="text-align: center;" class="buttons">
+                    <i class="icon-ok" data-bind="click: $root.acceptElementEdit"></i>
+                    <i class="icon-repeat" data-bind="click: $root.cancelElementEdit"></i>
+                </td>
+            </tr>
+    </script> <!-- }}} -->
 </body>
+<!-- {{{ Load Javascript at the end to allow for better request pipelining -->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script type="text/javascript" src="js/knockout-2.1.0.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<!--
+<script type="text/javascript" src="js/d3.v2.min.js"></script>
+<script type="text/javascript" src="js/d3.layout.cloud.js"></script>
+-->
+<!-- }}} -->
+<!--{{{ document.ready -->
+<script type="text/javascript">
+    $(document).ready(function() {
+        $.getScript("js/ko-utils/bindingHandlers.js", function() {
+            console.log("bindingHandlers loaded.");
+            $.getScript("js/ko-utils/protectedObservable.js", function() {
+                console.log("protectedObservable util loaded.");
+                $.getScript("js/models/conf.js", function() {
+                    console.log("ConfViewModel ready for initialization.");
+                    ko.applyBindings(cVM = new ConfViewModel());
+                });
+
+                $("#navItems li a").click(function(e) {
+                    if (!$(this).hasClass('active')) {
+                        $("#navItems li").filter(".active").removeClass("active");
+                        $(this).parent().addClass('active');
+                        location.hash = $(this).attr('href');
+                        console.log($(this).parent().attr("id"));
+                    }
+                    e.preventDefault();
+                });
+
+                var labels, mapped;
+                $('#propertySearch').typeahead({
+                    minLength: 3,
+                    source: function (query, process) {
+                        $.get('/search', { query: query }, function (data) {
+                            labels = [];
+                            mapped = {};
+
+                            $.each(data.found, function(i, item) {
+                                var tempLabel = item.term + ' (' + item.friendlyName + ')';
+                                mapped[tempLabel] = {friendlyName: item.friendlyName, label: tempLabel};
+                                labels.push(tempLabel);
+                            });
+
+                            process(labels);
+                        });
+                    },
+                    updater: function(item) { 
+                        //console.log("typeahead.updater - item: %s", item);
+                        var selfObj = mapped[item];
+                        console.log("typeahead.updater - friendlyName: %s", selfObj.friendlyName);
+                        cVM.loadConf(selfObj.friendlyName);
+
+                        $("#navItems li").filter(".active").removeClass("active");
+                        $("#navItems li#currentConfig").addClass("active");
+                        cVM.focusSearch(false);
+
+                        //replace " (friendlyName)" with nothing in the actual selection
+                        //this avoids unnecessary searches by backspacing through extraneous text
+                        return item.replace(/ \(.*\)$/,"");
+                    },
+                    highlighter: function(item) {
+                        var selfObj = mapped[item];
+                        //do some modification of the output HTML for the list
+                        return item.replace(/ (\(.*\))$/, " <strong>(<i>" + selfObj.friendlyName + "</i>)</strong>");
+                    }
+                });
+            });
+        });
+    });
+</script><!--}}}-->
+<!-- {{{ *COMMENTED OUT* Word Cloud 
+<script>
+    var fill = d3.scale.category20();
+
+    $.get('/wordCloud', null, function (data) {
+        var cloudWords = data.found;        
+
+        d3.layout.cloud().size([1024, 384])
+            .words(cloudWords.map(function(d) {
+                return {text: d, size: 30 + Math.random() * 90};
+            }))
+            .rotate(function() { return ~~(Math.random() * 2) * 90; })
+            .font("Impact")
+            .fontSize(function(d) { return d.size; })
+            .on("end", draw)
+            .start();
+    });
+
+    function draw(words) {
+        d3.select("#wordCloud").append("svg")
+            .attr("width", 1024)
+            .attr("height", 384)
+            .append("g")
+            .attr("transform", "translate(512,192)")
+            .selectAll("text")
+            .data(words)
+            .enter().append("text")
+                .style("font-size", function(d) { return d.size + "px"; })
+                .style("font-family", "Impact")
+                .style("fill", function(d, i) { return fill(i); })
+                .attr("text-anchor", "middle")
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function(d) { return d.text; });
+    }
+</script> }}} -->
 </html>
