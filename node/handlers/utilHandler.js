@@ -74,7 +74,8 @@ exports.search = function(req, res, next) {
             {"hostIdentification.friendlyName": /^[a-zA-Z0-9%=+_\-.:]{3,}$/},
             {"hostIdentification.fqdn": /^[a-zA-Z0-9%=+_\-.:]{3,}$/},
             {"hostIdentification.ip": /^[a-zA-Z0-9%=+_\-.:]{3,}$/},
-            {"hostIdentification.url": /^[a-zA-Z0-9%=+_\-.:]{3,}$/}
+            {"hostIdentification.url": /^[a-zA-Z0-9%=+_\-.:]{3,}$/},
+            {"hostIdentification.environment": /^[a-zA-Z0-9%=+_\-.:]{3,}$/}
         ]},
         {
             _id: false,
@@ -82,6 +83,7 @@ exports.search = function(req, res, next) {
             "hostIdentification.fqdn" : true,
             "hostIdentification.ip" : true,
             "hostIdentification.url" : true,
+            "hostIdentification.environment" : true,
         },
         function(err, confList) {
             if (err) { //TODO: Handle the error for real
@@ -104,6 +106,9 @@ exports.search = function(req, res, next) {
                     }
                     if (searchTerm.hostIdentification.url.indexOf(req.params.query) !== -1) {
                         searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.url});
+                    }
+                    if (searchTerm.hostIdentification.environment.indexOf(req.params.query) !== -1) {
+                        searchTerms.push({"friendlyName": searchTerm.hostIdentification.friendlyName, "term": searchTerm.hostIdentification.environment});
                     }
                 });
                 res.send({found: searchTerms});
