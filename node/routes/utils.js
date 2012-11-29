@@ -8,4 +8,5 @@ module.exports = function(apiServer){
     });
 
     apiServer.get('/search', utilHandler.search);
+    //apiServer.get('/wordCloud', utilHandler.wordCloud);
 };
