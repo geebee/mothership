@@ -6,13 +6,16 @@ upstream mothership_pool {
 }
 
 server {
-    listen conf.mothership.com:443 ssl;
-    ssl_certificate     /Users/mike/checkout/mothership/ssl/mothership_dev_cert.pem;
-    ssl_certificate_key /Users/mike/checkout/mothership/ssl/mothership_dev_key.pem;
-    ssl_protocols       SSLv3 TLSv1;
-    ssl_ciphers         HIGH:!aNULL:!MD5;
+    listen              443;
+    server_name         conf.mothership.com;
+    keepalive_timeout   70;
 
-    server_name conf.mothership.com;
+    ssl                         on;
+    ssl_certificate             /Users/mike/checkout/mothership/ssl/mothership_dev_cert.pem;
+    ssl_certificate_key         /Users/mike/checkout/mothership/ssl/mothership_dev_key.pem;
+    ssl_protocols               SSLv3 TLSv1;
+    ssl_ciphers                 RC4:AES128-SHA:TLSv1:SSLv3:!ADH:!aNULL:!DH:!EDH:!eNULL:!LOW:!SSLv2:!EXP:!NULL;
+    ssl_prefer_server_ciphers   on;
 
     location /favicon.ico {
         alias /Users/mike/checkout/mothership/client/img/favicon.ico;
