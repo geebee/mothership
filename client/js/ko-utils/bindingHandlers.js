@@ -1,3 +1,28 @@
+ko.bindingHandlers.createPopover = {
+    init: function(element, valueAccessor) {
+        var o = valueAccessor();
+
+        $("#" + element.id).popover({trigger: o.trigger || 'click', placement: o.placement || 'right', title: o.title || 'No Title Assigned', content: o.content || 'No Content Assigned'})
+    },
+};
+
+ko.bindingHandlers.assignId = {
+    init: function(element, valueAccessor) {
+        element.id = valueAccessor();
+    },
+};
+
+ko.bindingHandlers.globallyUniqueId = {
+    init: function(element, valueAccessor) {
+        var value = valueAccessor();
+        value.id = value.id || ko.bindingHandlers.uniqueId.prefix + (++ko.bindingHandlers.uniqueId.counter);
+
+        element.id = value.id;
+    },
+    counter: 0,
+    prefix: "unique"
+};
+
 ko.bindingHandlers.hidden = {
     update: function(element, valueAccessor) {
         var isVisible = !ko.utils.unwrapObservable(valueAccessor());

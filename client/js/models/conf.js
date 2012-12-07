@@ -1,13 +1,17 @@
-// Class to represent a host identification entry//{{{
+// Class to represent a version of the conf {{{
+function Version(number, timestamp) {
+    this.number = number;
+    this.timestamp = timestamp;
+} //}}}
+// Class to represent a host identification entry {{{
 function HostIdentification(friendlyName, fqdn, ip, url, environment) {
-    //this.friendlyName = ko.protectedObservable(friendlyName);
     this.friendlyName = friendlyName;
     this.fqdn = ko.protectedObservable(fqdn);
     this.ip = ko.protectedObservable(ip);
     this.url = ko.protectedObservable(url);
     this.environment = ko.protectedObservable(environment);
     this.focused = ko.observable();
-}//}}}
+} // }}}
 // Class to represent an individual property entry //{{{
 function Property(key, value) {
     this.key = ko.protectedObservable(key);
@@ -18,22 +22,35 @@ function Property(key, value) {
 // Overall viewmodel for this screen, along with initial state
 function ConfViewModel() {
     var self = this;
+
+    this.confLoaded = ko.observable('none');
+    //this.newConf = ko.observable('none');
+    //this.guestHome = ko.observable('none');
+    //this.authenticatedHomeHome = ko.observable('none');
+
     this.hostIdentification = ko.observable();
     this.friendlyName = "";
-    this.version = ko.observable(0);
     this.properties = ko.observableArray([]);
+    this.currentVersion = ko.observable(0);
+    this.versions = ko.observableArray([]);
+
     this.selectedElement = ko.observable();
     this.searchFocused = ko.observable(true);
+
+    this.shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Behaviors
+
+    // Focus Search {{{
     this.focusSearch = function(focus) { 
         if (focus === false) {
             this.searchFocused(false);
         } else {
             this.searchFocused(true);
         }
-    };
+    }; //}}}
 
-    // Behaviors
-    // Add and remove properties//{{{
+    // Add and remove properties {{{
     this.addProperty = function() {
         var newProperty = new Property("", "");
         self.properties.push(newProperty);
@@ -44,7 +61,7 @@ function ConfViewModel() {
     this.removeProperty = function(property) {
         self.properties.destroy(property);
         self.selectedElement(null);
-    };//}}}
+    }; //}}}
 
     // Edit Property, Accept/Cancel Property Edits {{{
     this.editElement = function(item) {
@@ -112,25 +129,16 @@ function ConfViewModel() {
         };
     };//}}}
 
-    this.toggleVersions = function(i, e) {
-        console.log("i: %s, e: %s", i, e);
-        console.log('clicked versions link');
-        location.hash = "versionsPage";
-
-        var vP = $("#versionsPage");
-        vP.toggle();
-        vP.addClass('fadedIn');
-            
-        e.preventDefault();
-    };
-
+    // View/Edit Template Switcher {{{
     this.templateToUse = function(property) {
         return self.selectedElement() === property ? "editTemplate" : "viewTemplate";
-    };
+    }; //}}}
 
+    // Computed Observables {{{
     this.destroyedProperties = ko.computed(function() {
         return ko.utils.arrayFilter(self.properties(), function(property) { return property._destroy});
     });
+    // }}}
 
     // Load initial state from server, map to Property/HostIdentification instances, populate observables {{{
     this.loadConf = function(friendlyName){
@@ -150,21 +158,38 @@ function ConfViewModel() {
                 });
             }
 
-            self.version(allData._version);
+            self.currentVersion(allData._version);
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
 
+            self.confLoaded('block');
+        });
+    };//}}}
+
+    // Load Previous Versions of the Conf {{{
+    this.loadVersions = function(){
+        console.log("loadVersions - friendlyName: %s", self.friendlyName); 
+        $.getJSON("/conf/" + self.friendlyName + "/versions", function(allData) {
+            console.dir(allData);
+            var mappedVersions = $.map(allData, function(v) { 
+                var timestampDate = new Date(v.timestamp);
+                var friendlyTimestamp = self.shortMonths[timestampDate.getMonth()]  + timestampDate.getDate() + " - " + timestampDate.getHours() + (timestampDate.getMinutes() < 10 ? "0" + timestampDate.getMinutes() : timestampDate.getMinutes());
+                return new Version(v.version, friendlyTimestamp);
+            });
+            self.versions(mappedVersions);
         });
     };//}}}
 
     // Delete loaded config from the server {{{
     this.deleteConf = function(e) {
-        console.log("deleteConf - friendlyName: %s", e.friendlyName()); 
+        console.log("deleteConf - friendlyName: %s", e.friendlyName); 
 
         $("#hostInformationArea").addClass("success-border");
         setTimeout(function(){
             $("#hostInformationArea").removeClass("success-border");
         }, 2000);
+        
+        // $("#home a").click();
             
         /*
         $.ajax("/conf/" + friendlyName + "/host", {
@@ -215,12 +240,18 @@ function ConfViewModel() {
             success: function(result) { 
                 console.log("success.");
                 console.log(result);
-                //$("#propertyArea table tbody tr td").not(".buttons").addClass("control-group").addClass("success")
+                $("#propertyArea table").addClass("success-border");
+                setTimeout(function(){
+                    $("#propertyArea table").removeClass("success-border");
+                }, 2000);
             },
             failure: function(result) {
                 console.log("failure.");
                 console.log(result);
-                //$("#propertyArea table tbody tr td").not(".buttons").addClass("control-group").addClass("error")
+                $("#propertyArea table").addClass("error-border");
+                setTimeout(function(){
+                    $("#propertyArea table").removeClass("error-border");
+                }, 2000);
             }
         });
     }; //}}}

@@ -1,6 +1,8 @@
 require('../db/init');
 var confModel = require('../db/models/conf'); 
 var Conf = db.model('Conf', confModel.ConfSchema);
+var confVersionsModel = require('../db/models/confVersions'); 
+var ConfVersions = db.model('ConfVersions', confVersionsModel.ConfVersionsSchema);
 
 exports.list = function(req, res, next) {
     console.log("handler 'listConf'");
@@ -13,6 +15,27 @@ exports.list = function(req, res, next) {
         } else {
             console.log("All confs retrieved.");
             res.send(confList);
+        }
+    });
+};
+
+exports.getVersions = function(req, res, next) {
+    console.log("handler 'getConfVersions'");
+    ConfVersions.find({"hostIdentification.friendlyName": req.params.friendlyName},
+    {"confReference._version": true, "createdDate": true, _id: false}, 
+    {sort: {"confReference._version": -1}},
+    function(err, confList) {
+        if (err) { //TODO: Handle the error for real
+            console.log("Error Retrieving all confs: " + err);
+            //TODO: Don't retardedly concatenate to an empty string
+            res.send({error: "" + err});
+        } else {
+            console.log("All confs retrieved.");
+            var returnableData = [];
+            confList.forEach(function(cV){
+                returnableData.push({"version": cV.confReference._version, "timestamp": cV.createdDate});
+            });
+            res.send(returnableData);
         }
     });
 };

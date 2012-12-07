@@ -7,6 +7,8 @@ module.exports = function(apiServer){
     apiServer.get('/conf/:friendlyName', confHandler.single);
     apiServer.del('/conf/:friendlyName', confHandler.remove);
 
+    apiServer.get('/conf/:friendlyName/versions', confHandler.getVersions);
+
     apiServer.put('/conf/:friendlyName/property', confHandler.updateProperty);
     apiServer.del('/conf/:friendlyName/property', confHandler.removeProperty);
 
