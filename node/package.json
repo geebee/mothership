@@ -1,0 +1,37 @@
+{
+    "name": "mothership",
+    "preferGlobal": "false",
+    "version": "0.0.1",
+    "author": "Michael Goldberger <mike.goldberger@gmail.com>",
+    "description": "a restful API and for storing, editing, and serving application property files",
+    "contributors": [ 
+        {
+            "name": "Michael Goldberger",
+            "email": "mike.goldberger@gmail.com"
+        } 
+    ],
+    "scripts": {
+        "start": "node ./app.js",
+        "test": "echo command to run when npm test is called",
+        "predeploy": "echo This will be run before deploying the app",
+        "postdeploy": "echo This will be run after deploying the app"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/geebee/mothership.git"
+    },
+    "keywords": [
+        "properties",
+        "api",
+        "http",
+        "server"
+    ],
+    "dependencies" : {
+        "mongoose" :  "3.4.x",
+        "restify"   :  "https://github.com/mcavage/node-restify/tarball/master"
+    },
+    "license": "MIT",
+    "engines": {
+        "node": ">=0.8"
+    }
+}

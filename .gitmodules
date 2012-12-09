@@ -1,7 +1,0 @@
-[submodule "node/node_modules/http-signature"]
-	path = node/node_modules/http-signature
-	url = https://github.com/joyent/node-http-signature.git
-
-[submodule "node/node_modules/restify/node_modules/http-signature"]
-	path = node/node_modules/http-signature
-	url = https://github.com/joyent/node-http-signature.git

@@ -1,5 +1,5 @@
 .DS_Store
 mongo/logs/*
 mongo/data/*
-node/node_modules/.bin
+node/node_modules/*
 *.swp
