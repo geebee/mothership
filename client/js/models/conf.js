@@ -158,7 +158,7 @@ function ConfViewModel() {
                 });
             }
 
-            self.currentVersion(allData._version);
+            self.currentVersion(allData.v);
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
 

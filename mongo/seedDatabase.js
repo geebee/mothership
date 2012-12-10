@@ -4,7 +4,7 @@ db.confversions.drop();
 
 //Insert 3 confs with various values for testing
 db.confs.insert({
-    _version: 1,
+    v: 1,
     hostIdentification: {
         friendlyName: "testConfig",
         fqdn: "test.host.name",
@@ -21,7 +21,7 @@ db.confs.insert({
 });
 
 db.confs.insert({
-    _version: 1,
+    v: 1,
     hostIdentification: {
         friendlyName: "testConfig2",
         fqdn: "some.fq.dn",
@@ -36,7 +36,7 @@ db.confs.insert({
 });
 
 db.confs.insert({
-    _version: 1,
+    v: 1,
     hostIdentification: {
         friendlyName: "testConfig3",
         fqdn: "x.y.z",

@@ -1,35 +1,35 @@
 module.exports = exports = function version (schema, options) {
-    schema.add({_version: {type: Number, min: 0}});
+    schema.add({v: {type: Number, min: 0}});
 
     schema.pre('save', function (next) {
         currentDocument = this;
-        console.log("currentDocument._version: %s", currentDocument._version);
-        if (this.isNew) {
-            this._version = 1; 
+        console.log("currentDocument.v: %s", currentDocument.v);
+        if (currentDocument.isNew) {
+            currentDocument.v = 1; 
         } else {
             var confVersionsModel = require('../models/confVersions'); 
             var ConfVersions = db.model('ConfVersions', confVersionsModel.ConfVersionsSchema);
             var newVersion = new ConfVersions({
                 confReference: {
                     _id: currentDocument._id,
-                    _version: currentDocument._version
+                    v: currentDocument.v
                 },
                 hostIdentification: {
-                    "friendlyName": this.hostIdentification.friendlyName,
-                    "fqdn": this.hostIdentification.fqdn,
-                    "ip": this.hostIdentification.ip,
-                    "url": this.hostIdentification.url,
-                    "environment": this.hostIdentification.environment
+                    "friendlyName": currentDocument.hostIdentification.friendlyName,
+                    "fqdn": currentDocument.hostIdentification.fqdn,
+                    "ip": currentDocument.hostIdentification.ip,
+                    "url": currentDocument.hostIdentification.url,
+                    "environment": currentDocument.hostIdentification.environment
                 },
-                properties: this.properties
+                properties: currentDocument.properties
             });
             newVersion.save(function(err, data){
                 if (err) {
                     console.log("Error saving new version: %s", err);
                     next(err);
                 } else {
-                    console.log("Version (%s) successfully stored.", currentDocument._version);
-                    currentDocument._version += 1;
+                    console.log("Version (%s) successfully stored.", currentDocument.v);
+                    currentDocument.v += 1;
                     next();
                 };
             });
@@ -37,6 +37,6 @@ module.exports = exports = function version (schema, options) {
     });
 
     if (options && options.index) {
-        schema.path('_version').index(options.index);
+        schema.path('v').index(options.index);
     }
 };

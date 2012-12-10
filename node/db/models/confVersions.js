@@ -5,7 +5,7 @@ var createdAndModifiedDates = require('../plugins/createdAndModifiedDates');
 var ConfVersionsSchema = new mongoose.Schema({
     confReference: {
         _id: mongoose.Schema.Types.ObjectId,
-        _version: Number
+        v: Number
     },
     hostIdentification: mongoose.Schema.Types.Mixed,
     properties: [mongoose.Schema.Types.Mixed]
