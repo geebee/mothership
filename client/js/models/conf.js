@@ -25,8 +25,12 @@ function ConfViewModel() {
 
     this.confLoaded = ko.observable('none');
     //this.newConf = ko.observable('none');
-    //this.guestHome = ko.observable('none');
-    //this.authenticatedHomeHome = ko.observable('none');
+    this.guestHome = ko.observable('block');
+    //this.authenticatedHome = ko.observable('none');
+    
+    this.totalConfigs = ko.observable(0);
+    this.totalRevisions = ko.observable(0);
+    this.totalEnvironments = ko.observable(0);
 
     this.hostIdentification = ko.observable();
     this.friendlyName = "";
@@ -74,7 +78,12 @@ function ConfViewModel() {
         self.selectedElement().value.commit();
         self.selectedElement(null);
         var kvObject = ko.toJS(i);
-        self.upsertKeyValue(self.friendlyName, kvObject);
+        var row = e.target.parentNode.parentNode;
+        console.log("row...");
+        console.dir(row);
+        $(row).addClass("info");
+
+        self.upsertKeyValue(self.friendlyName, kvObject, $(e.target.parentElement.parentElement));
     };
 
     this.cancelElementEdit = function() {
@@ -140,6 +149,16 @@ function ConfViewModel() {
     });
     // }}}
 
+    // Load totalConfigs and totalRevisions for dashboard {{{
+    this.totalConfsAndRevisions = function(friendlyName){
+        console.log("Loading total confs and revisions");
+        $.getJSON("/dashboard/totals", function(totals) {
+            self.totalConfigs(totals.configs);
+            self.totalRevisions(totals.revisions);
+            self.totalEnvironments(totals.environments);
+        });
+    }; //}}}
+
     // Load initial state from server, map to Property/HostIdentification instances, populate observables {{{
     this.loadConf = function(friendlyName){
         self.friendlyName = friendlyName;
@@ -162,9 +181,10 @@ function ConfViewModel() {
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
 
+            self.guestHome('none');
             self.confLoaded('block');
         });
-    };//}}}
+    }; //}}}
 
     // Load Previous Versions of the Conf {{{
     this.loadVersions = function(){
@@ -230,8 +250,9 @@ function ConfViewModel() {
     };//}}}
 
     // Update or insert a key/value pair on this config {{{
-    this.upsertKeyValue= function(friendlyName, kvObject) {
+    this.upsertKeyValue= function(friendlyName, kvObject, rowElement) {
         console.log("upsertKeyValue - friendlyName: %s, kvObject: {%s: %s}", friendlyName, kvObject.key, kvObject.value); 
+        console.log("rowElement: %s", rowElement);
         $.ajax("/conf/" + friendlyName + "/property", {
             processData: false,
             data: ko.toJSON({"friendlyName": friendlyName, "toUpdate": kvObject}),
@@ -240,17 +261,18 @@ function ConfViewModel() {
             success: function(result) { 
                 console.log("success.");
                 console.log(result);
-                $("#propertyArea table").addClass("success-border");
+                self.currentVersion += 1;
+                $(rowElement).addClass("success");
                 setTimeout(function(){
-                    $("#propertyArea table").removeClass("success-border");
+                    $(rowElement).removeClass("success");
                 }, 2000);
             },
             failure: function(result) {
                 console.log("failure.");
                 console.log(result);
-                $("#propertyArea table").addClass("error-border");
+                $("#propertyArea table").addClass("error");
                 setTimeout(function(){
-                    $("#propertyArea table").removeClass("error-border");
+                    $("#propertyArea table").removeClass("error");
                 }, 2000);
             }
         });

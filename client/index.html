@@ -26,9 +26,14 @@
         </div> <!-- #navBarInner.navbar-inner -->
     </div> <!-- #navBarFrame.navbar }}} -->
     <br/>
-    <div id="guestHome" class="pageContainer row-fluid span12"> <!-- {{{ -->
-        <div id="wordCloud">
-        </div> <!-- div#wordCloud -->
+    <div id="guestHome" data-bind="style: {display: guestHome}" class="pageContainer row-fluid span12"> <!-- {{{ -->
+        <div id="wordCloud"></div> <!-- div#wordCloud -->
+        <br/><br/><br/>
+        <div id="allConfigsInfo" class="row-fluid well span8 offset2">
+            <p style="margin: 0 auto; text-align: center;">
+            There are&nbsp;<strong data-bind="text: totalConfigs"></strong>&nbsp;total configurations comprising&nbsp;<strong data-bind="text: totalRevisions"></strong>&nbsp;revisions across&nbsp;<strong data-bind="text: totalEnvironments"></strong>&nbsp;distinct environments.
+            </p>
+        </div> <!-- div#allConfigsInfo -->
     </div> <!-- div#guestHome.pageContainer.row-fluid.span12 }}}-->
 
     <div id="editConfig" data-bind="style: {display: confLoaded}" class="pageContainer row-fluid span12"> <!-- {{{ -->
@@ -115,6 +120,8 @@
                 $.getScript("js/models/conf.js", function() {
                     console.log("ConfViewModel ready for initialization.");
                     ko.applyBindings(cVM = new ConfViewModel());
+                    location.hash = "home";
+                    cVM.totalConfsAndRevisions();
                 });
 
                 $("#navItems li a").click(function(e) {
