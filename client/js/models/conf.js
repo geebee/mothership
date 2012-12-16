@@ -25,13 +25,7 @@ function ConfViewModel() {
 
     this.confLoaded = ko.observable('none');
     //this.newConf = ko.observable('none');
-    this.guestHome = ko.observable('block');
-    //this.authenticatedHome = ko.observable('none');
     
-    this.totalConfigs = ko.observable(0);
-    this.totalRevisions = ko.observable(0);
-    this.totalEnvironments = ko.observable(0);
-
     this.hostIdentification = ko.observable();
     this.friendlyName = "";
     this.properties = ko.observableArray([]);
@@ -39,20 +33,10 @@ function ConfViewModel() {
     this.versions = ko.observableArray([]);
 
     this.selectedElement = ko.observable();
-    this.searchFocused = ko.observable(true);
 
     this.shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     // Behaviors
-
-    // Focus Search {{{
-    this.focusSearch = function(focus) { 
-        if (focus === false) {
-            this.searchFocused(false);
-        } else {
-            this.searchFocused(true);
-        }
-    }; //}}}
 
     // Add and remove properties {{{
     this.addProperty = function() {
@@ -149,16 +133,6 @@ function ConfViewModel() {
     });
     // }}}
 
-    // Load totalConfigs and totalRevisions for dashboard {{{
-    this.totalConfsAndRevisions = function(friendlyName){
-        console.log("Loading total confs and revisions");
-        $.getJSON("/dashboard/totals", function(totals) {
-            self.totalConfigs(totals.configs);
-            self.totalRevisions(totals.revisions);
-            self.totalEnvironments(totals.environments);
-        });
-    }; //}}}
-
     // Load initial state from server, map to Property/HostIdentification instances, populate observables {{{
     this.loadConf = function(friendlyName){
         self.friendlyName = friendlyName;
@@ -181,7 +155,7 @@ function ConfViewModel() {
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
 
-            self.guestHome('none');
+            udVM.guestHome('none');
             self.confLoaded('block');
         });
     }; //}}}

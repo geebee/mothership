@@ -1,0 +1,30 @@
+<div id="wordCloud"></div> <!-- div#wordCloud -->
+<br/><br/><br/>
+<div id="guestDashboard" class="row-fluid well span8 offset2"> <!-- {{{ -->
+    <p style="margin: 0 auto; text-align: center;">
+    There are&nbsp;<strong data-bind="text: totalConfigs"></strong>&nbsp;total configurations comprising&nbsp;<strong data-bind="text: totalRevisions"></strong>&nbsp;revisions across&nbsp;<strong data-bind="text: totalEnvironments"></strong>&nbsp;distinct environments.
+    </p></br>
+    <div id="signUpOrSignIn" class="row-fluid">
+        <div class="span6">
+            <form id="signUpForm" class="form-inline" style="display:none;">
+                <input type="text" name="firstName" class="input-small" placeholder="First Name">
+                <input type="text" name="lastName" class="input-small" placeholder="Last Name"><br/>
+                <input type="text" name="email" class="input-small" placeholder="Email">
+                <input type="password" name="password" class="input-small" placeholder="Password">
+                <button type="submit" class="btn">Sign in</button>
+            </form>
+            <a href="#signUp" id="signUpLink" class="btn btn-block btn-info">Sign Up</a>
+        </div>
+        <div class="span6">
+            <form id="signInForm" class="form-inline" style="display:none;">
+                <input type="text" name="email" class="input-small" placeholder="Email">
+                <input type="password" name="password" class="input-small" placeholder="Password">
+                <label class="checkbox">
+                    <input type="checkbox"> Remember me
+                </label>
+                <button type="submit" class="btn">Sign in</button>
+            </form>
+            <a href="#signIn"  id="signInLink" class="btn btn-block btn-info">Sign In</a>
+        </div>
+    </div> <!-- div#signUpOrSignIn -->
+</div> <!-- div#guestDashboard }}} -->

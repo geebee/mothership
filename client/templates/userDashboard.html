@@ -1,0 +1,23 @@
+<div id="userDashboard" class="row-fluid well span8 offset2"> <!-- {{{ -->
+    <p style="margin: 0 auto; text-align: center;">
+    There are&nbsp;<strong data-bind="text: totalConfigs"></strong>&nbsp;total configurations comprising&nbsp;<strong data-bind="text: totalRevisions"></strong>&nbsp;revisions across&nbsp;<strong data-bind="text: totalEnvironments"></strong>&nbsp;distinct environments.
+    </p></br>
+    <div id="reportListContainer" class="well row-fluid span8 offset2"> <!-- {{{ -->
+        <div class="row-fluid span4 offset5"><h5>Reports:</h5></div>
+        <div id="reportList"class="row-fluid" style="margin-left: 6.5%"> <!-- {{{ -->
+            <div id="reportsListRight" class="span6 pull-right reportsList"> <!-- {{{ -->
+                <ul>
+                    <li><a href="#interestingStatsReport">Interesting Statistics</a></li>
+                    <li><a href="#leadersReport">Leaderboards</a></li>
+                </ul>
+            </div> <!-- div#reportsListRight.reportsList }}} -->
+            <div id="reportsListLeft" class="span6 pull-left reportsList"> <!-- {{{ -->
+                <ul>
+                    <li><a href="#prodConfigsReport">Environments matching /.*prod.*/</a></li>
+                    <li><a href="#testingQAConfigsReport">Environments matching /.*(?:test|qa).*/</a></li>
+                    <li><a href="#devConfigsReport">Environments matching /.*dev.*/</a></li>
+                </ul>
+            </div> <!-- div#reportsListLeft.reportsList }}} -->
+        </div> <!-- dev#reportList }}} -->
+    </div> <!-- div#reportListContainer" }}} -->
+</div> <!-- div#userDashboard }}} -->
