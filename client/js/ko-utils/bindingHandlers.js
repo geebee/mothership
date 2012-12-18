@@ -64,7 +64,7 @@ ko.bindingHandlers.clickToEdit = {
             click: function() {
                 //console.log("cVM: %s", cVM);
                 pObservable.commit();
-                cVM.saveHostIdentification(cVM.hostIdentification().friendlyName, function(res, textStatus){
+                mothership.cVM.saveHostIdentification(mothership.cVM.hostIdentification().friendlyName, function(res, textStatus){
                     console.log("updated successfully.");
                     //$("#hostInformationArea div.control-group i").filter(":visible").hide();
                     $("#hostInformationArea div.control-group").filter(":visible").addClass("success");
@@ -83,7 +83,7 @@ ko.bindingHandlers.clickToEdit = {
                     $("#hostInformationArea div.control-group span.help-inline").text("Error.");
                 });
             }
-        }, cVM);
+        }, mothership.cVM);
 
         ko.applyBindingsToNode(cancelButton, {
             click: function() {

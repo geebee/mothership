@@ -2,7 +2,7 @@
 function GuestDashboardViewModel() {
     var self = this;
 
-    this.guestHome = ko.observable('block');
+    this.guestHome = ko.observable(true);
 
     this.totalConfigs = ko.observable(0);
     this.totalRevisions = ko.observable(0);

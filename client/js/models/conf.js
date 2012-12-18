@@ -23,8 +23,8 @@ function Property(key, value) {
 function ConfViewModel() {
     var self = this;
 
-    this.confLoaded = ko.observable('none');
-    //this.newConf = ko.observable('none');
+    this.confLoaded = ko.observable(false);
+    //this.newConf = ko.observable(false);
     
     this.hostIdentification = ko.observable();
     this.friendlyName = "";
@@ -155,8 +155,8 @@ function ConfViewModel() {
             self.hostIdentification(mappedHostIdentification);
             self.properties(mappedProperties);
 
-            udVM.guestHome('none');
-            self.confLoaded('block');
+            mothership.gdVM.guestHome(false);
+            self.confLoaded(true);
         });
     }; //}}}
 
