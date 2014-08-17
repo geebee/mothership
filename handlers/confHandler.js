@@ -1,7 +1,7 @@
 require('../db/init');
-var confModel = require('../db/models/conf'); 
+var confModel = require('../db/models/conf');
 var Conf = db.model('Conf', confModel.ConfSchema);
-var confVersionsModel = require('../db/models/confVersions'); 
+var confVersionsModel = require('../db/models/confVersions');
 var ConfVersions = db.model('ConfVersions', confVersionsModel.ConfVersionsSchema);
 
 exports.list = function(req, res, next) {
@@ -22,7 +22,7 @@ exports.list = function(req, res, next) {
 exports.getVersions = function(req, res, next) {
     console.log("handler 'getConfVersions'");
     ConfVersions.find({"hostIdentification.friendlyName": req.params.friendlyName},
-    {"confReference.v": true, "createdDate": true, _id: false}, 
+    {"confReference.v": true, "createdDate": true, _id: false},
     {sort: {"confReference.v": -1}},
     function(err, confList) {
         if (err) { //TODO: Handle the error for real
@@ -55,37 +55,37 @@ exports.single = function(req, res, next) {
                 switch(req.params.style) {
                     case "raw":
                         console.log("Style was raw");
-                        var mappedProperties = ""; 
-                        conf.properties.forEach(function(p){ 
+                        var mappedProperties = "";
+                        conf.properties.forEach(function(p){
                             mappedProperties = mappedProperties + p.key + "=" + p.value + "\n";
-                        });  
+                        });
                         res.writeHead(200, {'Content-Type': 'text/plain'});
                         res.end(mappedProperties);
                         break;
                     case "quoted":
                         console.log("Style was quoted");
-                        var mappedProperties = ""; 
-                        conf.properties.forEach(function(p){ 
+                        var mappedProperties = "";
+                        conf.properties.forEach(function(p){
                             mappedProperties = mappedProperties + "\"" + p.key + "\"=\"" + p.value + "\"\n";
-                        });  
+                        });
                         res.writeHead(200, {'Content-Type': 'text/plain'});
                         res.end(mappedProperties);
                         break;
                     case "json":
                         console.log("Style was json");
                         var mappedProperties = {};
-                        conf.properties.forEach(function(p){ 
+                        conf.properties.forEach(function(p){
                             mappedProperties[p.key] = p.value;
-                        });  
+                        });
                         res.send(mappedProperties);
                         break;
                     case "properties":
                         console.log("Style was properties");
-                        var mappedProperties = ""; 
-                        conf.properties.forEach(function(p){ 
+                        var mappedProperties = "";
+                        conf.properties.forEach(function(p){
                             var fixedKey = p.key.replace(/\s/g,".");
                             mappedProperties = mappedProperties + fixedKey + "=" + p.value + "\n";
-                        });  
+                        });
                         res.writeHead(200, {'Content-Type': 'text/plain'});
                         res.end(mappedProperties);
                         break;
@@ -120,7 +120,7 @@ exports.modifyHost = function(req, res, next) {
     console.log("req.params: %j", req.params);
     console.log("Friendly Name: " + req.params.friendlyName);
 
-    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf){ 
+    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf){
         if (err) {
             console.log("Error Updating hostIdentification: " + err);
             res.send({error: "" + err});
@@ -132,7 +132,7 @@ exports.modifyHost = function(req, res, next) {
                     console.log("error: " + err);
                     res.send({"error": "" + err});
                 } else {
-                    console.log("Update Completed."); 
+                    console.log("Update Completed.");
                     res.send({"status": "successful"});
                 }
             });
@@ -145,7 +145,7 @@ exports.updateProperty = function(req, res, next) {
     console.log("Friendly Name: " + req.params.friendlyName);
     console.log("kvObject to update: {%s: %s}", req.params.toUpdate.key, req.params.toUpdate.value);
 
-    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf){ 
+    Conf.findOne({"hostIdentification.friendlyName": req.params.friendlyName}, function(err, conf){
         if (err) {
             console.log("Error Updating kvObject: " + err);
             res.send({error: "" + err});
@@ -171,7 +171,7 @@ exports.updateProperty = function(req, res, next) {
                     console.log("error: " + err);
                     res.send({"error": "" + err});
                 } else {
-                    console.log("Update Completed."); 
+                    console.log("Update Completed.");
                     res.send({"status": "successful"});
                 }
             });
@@ -185,7 +185,7 @@ exports.removeProperty = function(req, res, next) {
 
     Conf.findOneAndUpdate({"hostIdentification.friendlyName": req.params.friendlyName}, { $set: req.params.toUpdate}, function(err, numberAffected, rawResponse) {
         if (err) {
-            console.log("Error Updating User: " + err);
+            console.log("Error Updating Config: " + err);
             res.send({error: "" + err});
         } else {
             console.log("Update Completed. Affected Documents: " + numberAffected);
@@ -202,7 +202,7 @@ exports.create = function(req, res, next) {
     var newConf = new Conf({
         hostIdentification: {
             "friendlyName": req.params.friendlyName,
-            "fqdn": req.params.fqdn, 
+            "fqdn": req.params.fqdn,
             "ip": req.params.ip,
             "url": req.params.url
         },

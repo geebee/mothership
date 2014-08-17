@@ -4,11 +4,11 @@
     "version": "0.0.1",
     "author": "Michael Goldberger <mike.goldberger@gmail.com>",
     "description": "a restful API and for storing, editing, and serving application property files",
-    "contributors": [ 
+    "contributors": [
         {
             "name": "Michael Goldberger",
             "email": "mike.goldberger@gmail.com"
-        } 
+        }
     ],
     "scripts": {
         "start": "node ./app.js",
@@ -32,6 +32,6 @@
     },
     "license": "MIT",
     "engines": {
-        "node": ">=0.8"
+        "node": ">=0.10"
     }
 }
